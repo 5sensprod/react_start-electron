@@ -1,4 +1,3 @@
-// databaseOperations.js
 const db = require('./database')
 
 const addProduct = (productName, productPrice, callback) => {

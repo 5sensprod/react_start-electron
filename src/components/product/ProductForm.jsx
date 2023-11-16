@@ -10,7 +10,13 @@ const ProductForm = ({ onProductAdded }) => {
     ipcRendererHelper
       .invoke('add-product', productName, productPrice)
       .then(() => {
-        onProductAdded()
+        onProductAdded() // Cette fonction peut être utilisée pour recharger ou mettre à jour la liste des produits.
+        setProductName('') // Réinitialiser le nom du produit
+        setProductPrice('') // Réinitialiser le prix du produit
+      })
+      .catch((error) => {
+        console.error('Failed to add product:', error)
+        // Vous pouvez également gérer l'erreur ici, par exemple en informant l'utilisateur.
       })
   }
 
