@@ -1,4 +1,5 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
+const { addProduct, getProducts } = require('./databaseOperations') // Assurez-vous que le chemin est correct
 
 let mainWindow
 
@@ -8,10 +9,11 @@ function createWindow() {
     height: 600,
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false, // Ajoutez cette ligne si vous rencontrez des problèmes avec l'intégration de Node.js
+      enableRemoteModule: true, // Si vous avez besoin d'utiliser remote
     },
   })
 
-  // et chargez l'index.html de l'application.
   mainWindow.loadURL('http://localhost:3000')
 
   mainWindow.on('closed', function () {
@@ -31,4 +33,17 @@ app.on('activate', function () {
   if (mainWindow === null) {
     createWindow()
   }
+})
+
+// Configurations IPC pour la communication avec le processus de rendu
+ipcMain.handle('add-product', (event, productName, productPrice) => {
+  addProduct(productName, productPrice, (err, newDoc) => {
+    // Gérer la réponse, par exemple, envoyer une confirmation au processus de rendu
+  })
+})
+
+ipcMain.handle('get-products', (event) => {
+  getProducts((err, docs) => {
+    mainWindow.webContents.send('products-data', docs)
+  })
 })
