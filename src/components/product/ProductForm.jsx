@@ -30,6 +30,7 @@ const ProductForm = ({ onProductAdded }) => {
             type="text"
             value={productName}
             onChange={(e) => setProductName(e.target.value)}
+            required
           />
         </label>
         <br />
@@ -39,6 +40,7 @@ const ProductForm = ({ onProductAdded }) => {
             type="number"
             value={productPrice}
             onChange={(e) => setProductPrice(e.target.value)}
+            required
           />
         </label>
         <br />

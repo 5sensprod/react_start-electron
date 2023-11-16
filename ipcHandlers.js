@@ -1,5 +1,5 @@
 const { ipcMain } = require('electron')
-const { addProduct, getProducts } = require('./database/databaseOperations')
+const { addProduct, getProducts } = require('./databaseOperations')
 const { mainWindow } = require('./windowManager')
 
 function setupIPCHandlers() {

@@ -1,5 +1,5 @@
 const { app } = require('electron')
-const { createWindow, mainWindow } = require('./windowManager')
+const { createWindow, getMainWindow } = require('./windowManager')
 
 function setupAppLifecycle() {
   app.on('ready', () => {
@@ -13,7 +13,8 @@ function setupAppLifecycle() {
   })
 
   app.on('activate', () => {
-    if (mainWindow === null) {
+    // Utilisez ici getMainWindow au lieu de mainWindow
+    if (getMainWindow() === null) {
       createWindow()
     }
   })
