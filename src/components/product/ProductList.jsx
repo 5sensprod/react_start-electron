@@ -4,6 +4,10 @@ import { ipcRendererHelper } from '../utils/ipcRenderer'
 const ProductList = () => {
   const [products, setProducts] = useState([])
 
+  const handlePrint = () => {
+    window.print()
+  }
+
   useEffect(() => {
     ipcRendererHelper
       .invoke('get-products')
@@ -28,7 +32,7 @@ const ProductList = () => {
     return () => {
       ipcRendererHelper.removeAllListeners('products-data')
     }
-  }, []) // Empty array ensures this effect runs only once after the component mounts
+  }, [])
 
   return (
     <div>
@@ -41,6 +45,7 @@ const ProductList = () => {
             </li>
           ))}
       </ul>
+      <button onClick={handlePrint}>Imprimer la Liste</button>
     </div>
   )
 }
