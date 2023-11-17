@@ -89,7 +89,13 @@ const ProductCategoryForm = () => {
     } else {
       console.log('No category ID or incomplete product data.')
     }
-  }, [newCategoryName, selectedCategoryId, productData, handleCategorySubmit])
+  }, [
+    newCategoryName,
+    selectedCategoryId,
+    productData,
+    handleCategorySubmit,
+    handleProductSubmit,
+  ])
 
   return (
     <div>
