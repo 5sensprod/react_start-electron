@@ -4,6 +4,7 @@ import CategoryForm from './category/CategoryForm'
 import { ipcRendererHelper } from './utils/ipcRenderer'
 
 const ProductCategoryForm = () => {
+  // eslint-disable-next-line no-unused-vars
   const [categories, setCategories] = useState([])
   const [productData, setProductData] = useState({})
   const [newCategoryName, setNewCategoryName] = useState('')
@@ -100,12 +101,6 @@ const ProductCategoryForm = () => {
   return (
     <div>
       <h1>Gestion des Produits et Catégories</h1>
-      {/* Afficher la liste des catégories */}
-      <div>
-        {categories.map((category) => (
-          <div key={category._id}>{category.name}</div>
-        ))}
-      </div>
       <CategoryForm onCategoryChange={handleCategoryChange} />
       <ProductForm onProductDataChange={handleProductDataChange} />
       <button onClick={handleSubmit}>Soumettre</button>
