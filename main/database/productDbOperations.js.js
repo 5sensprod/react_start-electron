@@ -1,7 +1,7 @@
 const db = require('./database')
 
-const addProduct = (productName, productPrice, callback) => {
-  db.products.insert({ name: productName, price: productPrice }, callback)
+const addProduct = (product, callback) => {
+  db.products.insert(product, callback)
 }
 
 const getProducts = (callback) => {

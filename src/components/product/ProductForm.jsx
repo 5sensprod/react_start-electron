@@ -11,23 +11,24 @@ const ProductForm = ({ onProductAdded }) => {
       if (response.error) {
         console.error('Failed to add product:', response.error)
       } else {
-        onProductAdded() // Appelé lorsque le produit est ajouté avec succès
-        setProductName('') // Réinitialiser le nom du produit
-        setProductPrice('') // Réinitialiser le prix du produit
+        onProductAdded()
+        setProductName('')
+        setProductPrice('')
       }
     }
 
-    ipcRendererHelper.on('product-add-response', handleProductAddResponse)
+    ipcRendererHelper.on('product-add-success', handleProductAddResponse)
 
-    // Nettoyage
     return () => {
-      ipcRendererHelper.removeAllListeners('product-add-response')
+      ipcRendererHelper.removeAllListeners('product-add-success')
     }
   }, [onProductAdded])
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    ipcRendererHelper.send('add-product', productName, productPrice)
+    // Créer un objet produit à partir des valeurs des états
+    const productData = { name: productName, price: parseFloat(productPrice) }
+    ipcRendererHelper.send('add-product', productData)
   }
 
   return (

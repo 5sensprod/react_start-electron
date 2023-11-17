@@ -1,26 +1,20 @@
 // ipcHandlers.js
 const { ipcMain } = require('electron')
-const { addProduct, getProducts } = require('./database/databaseOperations')
+const { addProduct, getProducts } = require('./database/productDbOperations.js')
 
 function setupIpcHandlers(mainWindow) {
-  ipcMain.handle('add-product', (event, productName, productPrice) => {
-    addProduct(productName, productPrice, (err, newDoc) => {
+  ipcMain.on('add-product', (event, productData) => {
+    addProduct(productData, (err, newDoc) => {
       if (err) {
-        // Gérer l'erreur ici et éventuellement retourner ou envoyer une erreur au processus de rendu
-        return
-      }
-      // Choisir d'envoyer une confirmation au processus de rendu ici si nécessaire
-    })
-  })
-
-  ipcMain.on('add-product', (event, productName, productPrice) => {
-    addProduct(productName, productPrice, (err, newDoc) => {
-      if (err) {
-        event.reply('product-add-response', {
-          error: "Erreur lors de l'ajout du produit",
-        })
+        event.reply('product-add-error', err.message)
       } else {
-        event.reply('product-add-response', { data: newDoc })
+        event.reply('product-add-success', newDoc) // Informer le rendu de la réussite
+        // Optionnel : Envoyer une mise à jour de la liste des produits
+        getProducts((err, docs) => {
+          if (!err) {
+            event.reply('products-data', docs)
+          }
+        })
       }
     })
   })
