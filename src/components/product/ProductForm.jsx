@@ -1,23 +1,33 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ipcRendererHelper } from '../utils/ipcRenderer'
 
 const ProductForm = ({ onProductAdded }) => {
   const [productName, setProductName] = useState('')
   const [productPrice, setProductPrice] = useState('')
 
-  const handleSubmit = (event) => {
-    event.preventDefault()
-    ipcRendererHelper
-      .invoke('add-product', productName, productPrice)
-      .then(() => {
-        onProductAdded() // Cette fonction peut être utilisée pour recharger ou mettre à jour la liste des produits.
+  // Écoute la réponse du processus principal après avoir ajouté un produit
+  useEffect(() => {
+    const handleProductAddResponse = (event, response) => {
+      if (response.error) {
+        console.error('Failed to add product:', response.error)
+      } else {
+        onProductAdded() // Appelé lorsque le produit est ajouté avec succès
         setProductName('') // Réinitialiser le nom du produit
         setProductPrice('') // Réinitialiser le prix du produit
-      })
-      .catch((error) => {
-        console.error('Failed to add product:', error)
-        // Vous pouvez également gérer l'erreur ici, par exemple en informant l'utilisateur.
-      })
+      }
+    }
+
+    ipcRendererHelper.on('product-add-response', handleProductAddResponse)
+
+    // Nettoyage
+    return () => {
+      ipcRendererHelper.removeAllListeners('product-add-response')
+    }
+  }, [onProductAdded])
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    ipcRendererHelper.send('add-product', productName, productPrice)
   }
 
   return (

@@ -5,14 +5,14 @@ if (window.require) {
 }
 
 export const ipcRendererHelper = {
-  invoke: (channel, ...args) => {
-    return ipcRenderer
-      ? ipcRenderer.invoke(channel, ...args)
-      : Promise.reject('ipcRenderer non disponible')
-  },
-  on: (channel, listener) => {
+  send: (channel, ...args) => {
     if (ipcRenderer) {
-      ipcRenderer.on(channel, listener)
+      ipcRenderer.send(channel, ...args)
+    }
+  },
+  on: (channel, func) => {
+    if (ipcRenderer) {
+      ipcRenderer.on(channel, func)
     }
   },
   removeAllListeners: (channel) => {

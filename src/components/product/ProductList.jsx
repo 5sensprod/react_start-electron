@@ -9,26 +9,21 @@ const ProductList = () => {
   }
 
   useEffect(() => {
-    ipcRendererHelper
-      .invoke('get-products')
-      .then((docs) => {
-        if (Array.isArray(docs)) {
-          setProducts(docs)
-        } else {
-          console.error('Les données reçues ne sont pas un tableau', docs)
-        }
-      })
-      .catch((error) => {
-        console.error(error)
-      })
+    ipcRendererHelper.send('get-products')
 
+    // Gestionnaire pour écouter la réponse du processus principal
     const handleProductsData = (event, docs) => {
-      setProducts(docs)
+      if (Array.isArray(docs)) {
+        setProducts(docs)
+      } else {
+        console.error('Les données reçues ne sont pas un tableau', docs)
+      }
     }
 
+    // Enregistrer le gestionnaire d'événements
     ipcRendererHelper.on('products-data', handleProductsData)
 
-    // Cleanup this component
+    // Nettoyage en retirant le gestionnaire d'événements
     return () => {
       ipcRendererHelper.removeAllListeners('products-data')
     }
@@ -38,12 +33,11 @@ const ProductList = () => {
     <div>
       <h2>Liste des Produits</h2>
       <ul>
-        {products &&
-          products.map((product, index) => (
-            <li key={index}>
-              {product.name} - {product.price} €
-            </li>
-          ))}
+        {products.map((product, index) => (
+          <li key={index}>
+            {product.name} - {product.price} €
+          </li>
+        ))}
       </ul>
       <button onClick={handlePrint}>Imprimer la Liste</button>
     </div>

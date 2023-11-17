@@ -6,7 +6,7 @@ let mainWindow
 
 app.on('ready', () => {
   mainWindow = createWindow()
-  setupIpcHandlers(mainWindow) // Configure les gestionnaires IPC
+  setupIpcHandlers(mainWindow)
 })
 
 app.on('window-all-closed', function () {
@@ -18,6 +18,6 @@ app.on('window-all-closed', function () {
 app.on('activate', function () {
   if (mainWindow === null) {
     mainWindow = createWindow()
-    setupIpcHandlers(mainWindow) // S'assurer que les gestionnaires IPC sont configurés pour la nouvelle fenêtre
+    setupIpcHandlers(mainWindow)
   }
 })

@@ -6,24 +6,35 @@ function setupIpcHandlers(mainWindow) {
   ipcMain.handle('add-product', (event, productName, productPrice) => {
     addProduct(productName, productPrice, (err, newDoc) => {
       if (err) {
-        // Vous devrez gérer l'erreur ici et éventuellement retourner ou envoyer une erreur au processus de rendu
+        // Gérer l'erreur ici et éventuellement retourner ou envoyer une erreur au processus de rendu
         return
       }
-      // Vous pouvez choisir d'envoyer une confirmation au processus de rendu ici si nécessaire
+      // Choisir d'envoyer une confirmation au processus de rendu ici si nécessaire
     })
   })
 
-  ipcMain.handle('get-products', (event) => {
+  ipcMain.on('add-product', (event, productName, productPrice) => {
+    addProduct(productName, productPrice, (err, newDoc) => {
+      if (err) {
+        event.reply('product-add-response', {
+          error: "Erreur lors de l'ajout du produit",
+        })
+      } else {
+        event.reply('product-add-response', { data: newDoc })
+      }
+    })
+  })
+
+  ipcMain.on('get-products', (event, args) => {
     getProducts((err, docs) => {
       if (err) {
-        // Envoyer une erreur au processus de rendu
-        mainWindow.webContents.send(
+        event.reply(
           'products-data-error',
           'Erreur lors de la récupération des produits',
         )
-        return
+      } else {
+        event.reply('products-data', docs)
       }
-      mainWindow.webContents.send('products-data', docs)
     })
   })
 }
