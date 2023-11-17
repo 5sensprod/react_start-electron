@@ -1,21 +1,21 @@
 import React, { useState, useCallback } from 'react'
 import './i18n'
-import ProductForm from './components/product/ProductForm'
+import ProductCategoryForm from './components/ProductCategoryForm'
 import ProductList from './components/product/ProductList'
-import CategoryForm from './components/category/CategoryForm'
 
 const App = () => {
   const [reloadProducts, setReloadProducts] = useState(false)
 
   const handleProductAdded = useCallback(() => {
+    // Cette fonction pourrait être appelée pour recharger les produits après l'ajout d'un nouveau produit
     setReloadProducts((prev) => !prev)
-  }, []) // Aucune dépendance, donc cette fonction est mémorisée et ne change pas
+  }, [])
 
   return (
     <div>
-      <ProductForm onProductAdded={handleProductAdded} />
+      {/* Remplacez ProductForm et CategoryForm par ProductCategoryForm */}
+      <ProductCategoryForm onProductAdded={handleProductAdded} />
       <ProductList key={reloadProducts} />
-      <CategoryForm />
     </div>
   )
 }
