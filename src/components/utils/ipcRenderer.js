@@ -12,7 +12,12 @@ export const ipcRendererHelper = {
   },
   on: (channel, func) => {
     if (ipcRenderer) {
-      ipcRenderer.on(channel, func)
+      ipcRenderer.on(channel, (event, ...args) => func(event, ...args))
+    }
+  },
+  once: (channel, func) => {
+    if (ipcRenderer) {
+      ipcRenderer.once(channel, (event, ...args) => func(event, ...args))
     }
   },
   removeAllListeners: (channel) => {
@@ -20,4 +25,5 @@ export const ipcRendererHelper = {
       ipcRenderer.removeAllListeners(channel)
     }
   },
+  // Ajoutez ici d'autres méthodes au besoin...
 }

@@ -27,16 +27,14 @@ const ProductCategoryForm = () => {
   useEffect(() => {
     ipcRendererHelper.on('category-add-success', (event, newCategory) => {
       setCategories((prevCategories) => [...prevCategories, newCategory])
-      setSelectedCategoryId(newCategory._id) // Save the new category id
+      setSelectedCategoryId(newCategory._id)
     })
 
     ipcRendererHelper.on('product-add-success', (event, newProduct) => {
       console.log('Product added successfully:', newProduct)
-      setProductData({}) // Clear the product form upon success
-      setSelectedCategoryId('') // Reset selected category id
+      setProductData({})
+      setSelectedCategoryId('')
     })
-
-    // Handle errors here (not shown for brevity)
   }, [])
 
   const handleProductDataChange = useCallback((newProductData) => {
@@ -48,29 +46,50 @@ const ProductCategoryForm = () => {
   }, [])
 
   const handleCategorySubmit = useCallback(() => {
-    ipcRendererHelper.send('add-category', { name: newCategoryName })
+    return new Promise((resolve, reject) => {
+      ipcRendererHelper.send('add-category', { name: newCategoryName })
+
+      ipcRendererHelper.once('category-add-success', (event, newCategory) => {
+        resolve(newCategory)
+      })
+
+      ipcRendererHelper.once('category-add-error', (event, error) => {
+        reject(error)
+      })
+    })
   }, [newCategoryName])
 
-  const handleProductSubmit = useCallback(() => {
-    if (Object.keys(productData).length > 0) {
-      // Make sure to include the categoryId in the product data
+  const handleProductSubmit = useCallback(
+    (categoryId) => {
       ipcRendererHelper.send('add-product', {
         ...productData,
-        categoryId: selectedCategoryId,
+        categoryId,
       })
-    }
-  }, [productData, selectedCategoryId])
+    },
+    [productData],
+  )
 
-  // This function now only updates the newCategoryName and selectedCategoryId when a new
-  // category is added, it doesn't automatically send the product data
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
+    let categoryId = selectedCategoryId
+
     if (newCategoryName) {
-      handleCategorySubmit()
-      setNewCategoryName('') // Clear the category input
+      try {
+        const newCategory = await handleCategorySubmit()
+        categoryId = newCategory._id
+        setCategories((prevCategories) => [...prevCategories, newCategory])
+      } catch (error) {
+        console.error('Error adding category:', error)
+        return
+      }
     }
 
-    handleProductSubmit()
-  }, [handleCategorySubmit, handleProductSubmit, newCategoryName])
+    if (Object.keys(productData).length > 0 && categoryId) {
+      handleProductSubmit(categoryId)
+      setProductData({})
+    } else {
+      console.log('No category ID or incomplete product data.')
+    }
+  }, [newCategoryName, selectedCategoryId, productData, handleCategorySubmit])
 
   return (
     <div>

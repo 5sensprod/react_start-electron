@@ -40,19 +40,13 @@ function setupIpcHandlers(mainWindow) {
 ipcMain.on('add-category', (event, categoryData) => {
   addCategory(categoryData, (err, newDoc) => {
     if (err) {
-      event.reply('product-add-error', err.message)
+      event.reply('category-add-error', err.message)
     } else {
-      event.reply('product-add-success', newDoc) // Informer le rendu de la réussite
-      // Optionnel : Envoyer une mise à jour de la liste des produits
-      getProducts((err, docs) => {
-        if (!err) {
-          event.reply('products-data', docs)
-        }
-      })
+      event.reply('category-add-success', newDoc)
+      // Pas besoin de mettre à jour la liste des produits ici
     }
   })
 })
-
 ipcMain.on('get-categories', (event, args) => {
   getCategories((err, docs) => {
     if (err) {
