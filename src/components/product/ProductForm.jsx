@@ -1,15 +1,18 @@
-// src/components/product/ProductForm.jsx
 import React, { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next' // Importez useTranslation
 import productSchema from '../schemas/productSchema'
 import { ipcRendererHelper } from '../utils/ipcRenderer'
 
 const FormField = ({ fieldKey, fieldSchema, value, onChange }) => {
-  // Déterminez le type d'input basé sur le schéma
+  const { t } = useTranslation() // Utilisez le hook pour accéder à la fonction de traduction
   const inputType = fieldSchema.type === String ? 'text' : 'number'
+
+  // Utilisez la fonction de traduction `t` pour obtenir le label traduit
+  const label = t(`productForm.labels.${fieldKey}`)
 
   return (
     <label>
-      {fieldKey.charAt(0).toUpperCase() + fieldKey.slice(1)} :
+      {label} :
       <input
         type={inputType}
         value={value}

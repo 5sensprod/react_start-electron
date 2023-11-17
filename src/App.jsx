@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react'
+import './i18n'
 import ProductForm from './components/product/ProductForm'
 import ProductList from './components/product/ProductList'
 

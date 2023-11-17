@@ -1,0 +1,9 @@
+{
+  "productForm": {
+    "labels": {
+      "name": "Nom",
+      "surname": "Prénom",
+      "price": "Prix"
+    }
+  }
+}
