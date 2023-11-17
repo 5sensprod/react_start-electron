@@ -35,7 +35,7 @@ const ProductList = () => {
       <ul>
         {products.map((product, index) => (
           <li key={index}>
-            {product.name} - {product.price} €
+            {product.name} - {product.surname} - {product.price} €
           </li>
         ))}
       </ul>
