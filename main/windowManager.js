@@ -1,5 +1,8 @@
 const { BrowserWindow } = require('electron')
 
+const path = require('path')
+const isDev = require('electron-is-dev')
+
 let mainWindow = null
 
 function createWindow() {
@@ -18,12 +21,11 @@ function createWindow() {
   mainWindow.loadURL('http://localhost:3000')
 
   // Émis lorsque la fenêtre est fermée.
-  mainWindow.on('closed', function () {
-    // Déréférence l'objet window, habituellement vous stockeriez les fenêtres
-    // dans un tableau si votre application supporte des fenêtres multiples, c'est le moment
-    // où vous devriez supprimer l'élément correspondant.
-    mainWindow = null
-  })
+  mainWindow.loadURL(
+    isDev
+      ? 'http://localhost:3000'
+      : `file://${path.join(__dirname, '../build/index.html')}`,
+  )
 
   return mainWindow
 }
