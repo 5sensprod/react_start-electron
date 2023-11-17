@@ -55,7 +55,7 @@
     "wait-on": "^6.0.0"
   },
   "build": {
-    "appId": "com.yourcompany.stockap",
+    "appId": "com.5sensprod.stockap",
     "directories": {
       "buildResources": "assets"
     },
