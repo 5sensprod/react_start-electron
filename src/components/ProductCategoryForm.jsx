@@ -2,13 +2,25 @@ import React, { useState, useEffect, useCallback } from 'react'
 import ProductForm from './product/ProductForm'
 import CategoryForm from './category/CategoryForm'
 import { ipcRendererHelper } from './utils/ipcRenderer'
+import productSchema from './schemas/productSchema'
+
+const initialProductData = Object.keys(productSchema).reduce((acc, key) => {
+  acc[key] = ''
+  return acc
+}, {})
 
 const ProductCategoryForm = () => {
   // eslint-disable-next-line no-unused-vars
   const [categories, setCategories] = useState([])
-  const [productData, setProductData] = useState({})
+
   const [newCategoryName, setNewCategoryName] = useState('')
   const [selectedCategoryId, setSelectedCategoryId] = useState('')
+  const [productData, setProductData] = useState(initialProductData)
+
+  const resetForm = () => {
+    setProductData(initialProductData)
+    setSelectedCategoryId('')
+  }
 
   useEffect(() => {
     ipcRendererHelper.send('get-categories')
@@ -16,6 +28,18 @@ const ProductCategoryForm = () => {
       setCategories(categoriesData)
     })
 
+    ipcRendererHelper.on('category-add-success', (event, newCategory) => {
+      setCategories((prevCategories) => [...prevCategories, newCategory])
+      setSelectedCategoryId(newCategory._id)
+      setNewCategoryName('')
+    })
+
+    ipcRendererHelper.on('product-add-success', (event, newProduct) => {
+      setProductData({})
+      setSelectedCategoryId('')
+    })
+
+    // Remove all listeners when the component unmounts
     return () => {
       ipcRendererHelper.removeAllListeners('categories-data')
       ipcRendererHelper.removeAllListeners('category-add-success')
@@ -25,84 +49,57 @@ const ProductCategoryForm = () => {
     }
   }, [])
 
-  useEffect(() => {
-    ipcRendererHelper.on('category-add-success', (event, newCategory) => {
-      setCategories((prevCategories) => [...prevCategories, newCategory])
-      setSelectedCategoryId(newCategory._id)
-    })
-
-    ipcRendererHelper.on('product-add-success', (event, newProduct) => {
-      console.log('Product added successfully:', newProduct)
-      setProductData({})
-      setSelectedCategoryId('')
-    })
-  }, [])
-
-  const handleProductDataChange = useCallback((newProductData) => {
-    setProductData(newProductData)
-  }, [])
-
-  const handleCategoryChange = useCallback((name) => {
+  const handleProductDataChange = (updatedProductData) => {
+    setProductData(updatedProductData)
+  }
+  const handleCategoryChange = (name) => {
     setNewCategoryName(name)
-  }, [])
+  }
 
   const handleCategorySubmit = useCallback(() => {
     return new Promise((resolve, reject) => {
       ipcRendererHelper.send('add-category', { name: newCategoryName })
-
-      ipcRendererHelper.once('category-add-success', (event, newCategory) => {
-        resolve(newCategory)
-      })
-
-      ipcRendererHelper.once('category-add-error', (event, error) => {
-        reject(error)
-      })
+      ipcRendererHelper.once('category-add-success', (event, newCategory) =>
+        resolve(newCategory),
+      )
+      ipcRendererHelper.once('category-add-error', (event, error) =>
+        reject(error),
+      )
     })
   }, [newCategoryName])
 
-  const handleProductSubmit = useCallback(
-    (categoryId) => {
-      ipcRendererHelper.send('add-product', {
-        ...productData,
-        categoryId,
-      })
-    },
-    [productData],
-  )
-
-  const handleSubmit = useCallback(async () => {
-    let categoryId = selectedCategoryId
-
+  const handleSubmit = async () => {
     if (newCategoryName) {
       try {
         const newCategory = await handleCategorySubmit()
-        categoryId = newCategory._id
-        setCategories((prevCategories) => [...prevCategories, newCategory])
+        handleProductSubmit(newCategory._id)
       } catch (error) {
         console.error('Error adding category:', error)
         return
       }
+    } else if (selectedCategoryId) {
+      handleProductSubmit(selectedCategoryId)
     }
+  }
 
-    if (Object.keys(productData).length > 0 && categoryId) {
-      handleProductSubmit(categoryId)
-      setProductData({})
-    } else {
-      console.log('No category ID or incomplete product data.')
+  const handleProductSubmit = (categoryId) => {
+    if (Object.keys(productData).length) {
+      ipcRendererHelper.send('add-product', { ...productData, categoryId })
+      resetForm()
     }
-  }, [
-    newCategoryName,
-    selectedCategoryId,
-    productData,
-    handleCategorySubmit,
-    handleProductSubmit,
-  ])
+  }
 
   return (
     <div>
       <h1>Gestion des Produits et Catégories</h1>
-      <CategoryForm onCategoryChange={handleCategoryChange} />
-      <ProductForm onProductDataChange={handleProductDataChange} />
+      <CategoryForm
+        categoryName={newCategoryName}
+        onCategoryChange={handleCategoryChange}
+      />
+      <ProductForm
+        productData={productData}
+        onProductDataChange={handleProductDataChange}
+      />
       <button onClick={handleSubmit}>Soumettre</button>
     </div>
   )
