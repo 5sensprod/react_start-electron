@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react'
 import './i18n'
 import ProductForm from './components/product/ProductForm'
 import ProductList from './components/product/ProductList'
+import CategoryForm from './components/category/CategoryForm'
 
 const App = () => {
   const [reloadProducts, setReloadProducts] = useState(false)
@@ -14,6 +15,7 @@ const App = () => {
     <div>
       <ProductForm onProductAdded={handleProductAdded} />
       <ProductList key={reloadProducts} />
+      <CategoryForm />
     </div>
   )
 }

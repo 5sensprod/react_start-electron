@@ -3,7 +3,8 @@
     "labels": {
       "name": "Nom",
       "surname": "Prénom",
-      "price": "Prix"
+      "price": "Prix",
+      "category": "Catégorie"
     }
   }
 }

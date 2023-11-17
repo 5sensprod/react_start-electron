@@ -14,4 +14,9 @@ db.products = new Datastore({
   autoload: true,
 })
 
+db.categories = new Datastore({
+  filename: path.join(app.getPath('userData'), '/categories.db'),
+  autoload: true,
+})
+
 module.exports = db
