@@ -3,9 +3,17 @@
     "labels": {
       "name": "Référence",
       "surname": "Prénom",
-      "price": "Prix",
+      "price": "Prix de vente",
+      "ugs": "Etat du stock",
+      "purchasePrice": "Prix d'achat",
       "brand": "Marque",
-      "category": "Catégorie"
+      "gencode": "Code barre",
+      "category": "Catégorie",
+      "description": "Description",
+      "shortDescription": "Courte description",
+      "photos": "Photos",
+      "videos": "Vidéos",
+      "files": "Fichiers"
     }
   }
 }

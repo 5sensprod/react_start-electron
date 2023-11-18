@@ -52,7 +52,7 @@ const ProductForm = ({
   }
 
   return (
-    <Grid container direction="column" spacing={2}>
+    <Grid container direction="column" spacing={1}>
       {Object.keys(productSchema).map((key) => (
         <Grid item xs={12} key={key}>
           <FormField
