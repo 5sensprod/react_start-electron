@@ -56,7 +56,7 @@ const ParentCategoryAutocomplete = ({
         getOptionLabel={(option) => option.name}
         onChange={(event, value) => {
           setSelectedParentCategory(value)
-          onParentCategoryChange(value) // Appelle la fonction passée en prop
+          onParentCategoryChange(value)
         }}
         renderInput={(params) => (
           <TextField {...params} label="Catégorie Parente" />
@@ -68,7 +68,7 @@ const ParentCategoryAutocomplete = ({
           options={childCategories}
           getOptionLabel={(option) => option.name}
           onChange={(event, value) => {
-            onChildCategoryChange(value) // Appelle la fonction passée en prop
+            onChildCategoryChange(value)
           }}
           renderInput={(params) => (
             <TextField {...params} label="Catégorie Enfant" />

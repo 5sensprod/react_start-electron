@@ -14,7 +14,7 @@ function setupIpcHandlers(mainWindow) {
       if (err) {
         event.reply('product-add-error', err.message)
       } else {
-        event.reply('product-add-success', newDoc) // Informer le rendu de la réussite
+        event.reply('product-add-success', newDoc)
         // Optionnel : Envoyer une mise à jour de la liste des produits
         getProducts((err, docs) => {
           if (!err) {
@@ -45,7 +45,6 @@ ipcMain.on('add-category', (event, categoryData) => {
       event.reply('category-add-error', err.message)
     } else {
       event.reply('category-add-success', newDoc)
-      // Pas besoin de mettre à jour la liste des produits ici
     }
   })
 })
@@ -72,7 +71,6 @@ ipcMain.on('get-parent-categories', (event, args) => {
         'Erreur lors de la récupération des catégories parentes',
       )
     } else {
-      console.log('Sending parent categories:', docs)
       event.reply('parent-categories-data', docs)
     }
   })
