@@ -8,6 +8,7 @@ import theme from './theme/theme'
 import './i18n'
 import ProductCategoryForm from './components/ProductCategoryForm'
 import ProductList from './components/product/ProductList'
+import ParentCategoryAutocomplete from './components/ui/ParentCategoryAutocomplete'
 
 const App = () => {
   const [reloadProducts, setReloadProducts] = useState(false)
@@ -20,6 +21,7 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <Container maxWidth="lg" my={3}>
         <Box my={4}>
+          <ParentCategoryAutocomplete />
           <Typography variant="h4" gutterBottom>
             Tous les articles
           </Typography>

@@ -17,6 +17,16 @@ db.products = new Datastore({
 db.categories = new Datastore({
   filename: path.join(app.getPath('userData'), '/categories.db'),
   autoload: true,
+  onload: (err) => {
+    if (err) {
+      console.error('Error loading the database', err)
+      if (err.message.includes('10% of the data file is corrupt')) {
+        // Tentative de réparation du fichier de données corrompu
+        console.log('Attempting to repair the database file')
+        db.categories.persistence.compactDatafile()
+      }
+    }
+  },
 })
 
 module.exports = db

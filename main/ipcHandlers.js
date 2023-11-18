@@ -4,6 +4,8 @@ const { addProduct, getProducts } = require('./database/productDbOperations.js')
 const {
   addCategory,
   getCategories,
+  getParentCategories,
+  getChildCategories,
 } = require('./database/categoryDbOperations.js')
 
 function setupIpcHandlers(mainWindow) {
@@ -47,6 +49,7 @@ ipcMain.on('add-category', (event, categoryData) => {
     }
   })
 })
+
 ipcMain.on('get-categories', (event, args) => {
   getCategories((err, docs) => {
     if (err) {
@@ -56,6 +59,34 @@ ipcMain.on('get-categories', (event, args) => {
       )
     } else {
       event.reply('products-data', docs)
+    }
+  })
+})
+
+ipcMain.on('get-parent-categories', (event, args) => {
+  getParentCategories((err, docs) => {
+    if (err) {
+      console.error('Error retrieving parent categories:', err)
+      event.reply(
+        'parent-categories-data-error',
+        'Erreur lors de la récupération des catégories parentes',
+      )
+    } else {
+      console.log('Sending parent categories:', docs)
+      event.reply('parent-categories-data', docs)
+    }
+  })
+})
+
+ipcMain.on('get-child-categories', (event, parentId) => {
+  getChildCategories(parentId, (err, docs) => {
+    if (err) {
+      event.reply(
+        'child-categories-data-error',
+        'Erreur lors de la récupération des catégories enfants',
+      )
+    } else {
+      event.reply('child-categories-data', docs)
     }
   })
 })
