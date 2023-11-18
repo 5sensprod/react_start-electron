@@ -6,9 +6,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import theme from './theme/theme'
 
 import './i18n'
-import ProductCategoryForm from './components/ProductCategoryForm'
 import ProductList from './components/product/ProductList'
-import ParentCategoryAutocomplete from './components/ui/ParentCategoryAutocomplete'
 import AddProductForm from './components/AddProductForm '
 
 const App = () => {
@@ -21,24 +19,17 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <Container maxWidth="lg" my={3}>
+        <Typography variant="h4" gutterBottom>
+          Ajout produit
+        </Typography>
         <Box my={4}>
-          <ParentCategoryAutocomplete />
-          <Typography variant="h4" gutterBottom>
-            Tous les articles
-          </Typography>
-          <ProductCategoryForm onProductAdded={handleProductAdded} />
+          <AddProductForm onProductAdded={handleProductAdded} />
         </Box>
         <Typography variant="h4" gutterBottom>
           Liste des Produits
         </Typography>
         <Box my={4}>
           <ProductList key={reloadProducts.toString()} />
-        </Box>
-        <Typography variant="h4" gutterBottom>
-          Ajout produit
-        </Typography>
-        <Box my={4}>
-          <AddProductForm />
         </Box>
       </Container>
     </ThemeProvider>

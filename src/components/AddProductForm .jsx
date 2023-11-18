@@ -9,7 +9,7 @@ import productSchema from './schemas/productSchema'
 const getInitialProductData = () => {
   return Object.keys(productSchema).reduce(
     (acc, key) => {
-      acc[key] = productSchema[key].type === String ? '' : 0 // Chaînes vides pour les String, 0 pour les Number
+      acc[key] = productSchema[key].type === String ? '' : 0
       return acc
     },
     {
@@ -21,6 +21,37 @@ const getInitialProductData = () => {
 
 const AddProductForm = () => {
   const [productData, setProductData] = useState(getInitialProductData())
+  const [errors, setErrors] = useState({})
+
+  const validateForm = () => {
+    const newErrors = {}
+    let isValid = true
+
+    Object.keys(productSchema).forEach((key) => {
+      const value = productData[key]
+      const schema = productSchema[key]
+
+      if (schema.required && (value === null || value === '' || value === 0)) {
+        newErrors[key] = 'Ce champ est requis'
+        isValid = false
+      }
+
+      if (
+        schema.type === Number &&
+        schema.min !== undefined &&
+        value < schema.min
+      ) {
+        newErrors[key] =
+          `La valeur doit être supérieure ou égale à ${schema.min}`
+        isValid = false
+      }
+
+      // Ajouter ici d'autres règles de validation si nécessaire
+    })
+
+    setErrors(newErrors)
+    return isValid
+  }
 
   const handleParentCategoryChange = (category) => {
     const categoryId = category ? category._id : null
@@ -33,17 +64,20 @@ const AddProductForm = () => {
   }
 
   const handleSubmit = () => {
+    if (!validateForm()) {
+      console.log('Validation échouée:', errors)
+      return
+    }
+
     ipcRendererHelper.send('add-product', productData)
 
     ipcRendererHelper.once('product-add-success', () => {
-      setProductData(getInitialProductData()) // Réinitialise le formulaire sur succès
-      // Ici, tu peux aussi afficher un message de succès ou effectuer d'autres actions d'interface utilisateur
+      setProductData(getInitialProductData()) // Réinitialiser le formulaire sur succès
+      // Afficher un message de succès ou effectuer d'autres actions d'interface utilisateur
     })
 
     ipcRendererHelper.once('product-add-error', (event, error) => {
-      // Gère l'erreur d'ajout de produit
       console.error('Product add error:', error)
-      // Ici, tu peux aussi afficher un message d'erreur ou effectuer d'autres actions d'interface utilisateur
     })
   }
 
@@ -61,7 +95,11 @@ const AddProductForm = () => {
       />
       <ProductForm
         productData={productData}
-        onProductDataChange={setProductData}
+        onProductDataChange={(fieldKey, fieldValue) => {
+          setProductData({ ...productData, [fieldKey]: fieldValue })
+        }}
+        errors={errors}
+        setErrors={setErrors}
       />
       <Button variant="contained" color="primary" onClick={handleSubmit}>
         Ajouter le produit
