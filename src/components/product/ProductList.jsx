@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { ipcRendererHelper } from '../utils/ipcRenderer'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import Button from '@mui/material/Button'
+import Paper from '@mui/material/Paper'
+import { Box } from '@mui/material'
 
 const ProductList = () => {
   const [products, setProducts] = useState([])
@@ -31,15 +36,22 @@ const ProductList = () => {
 
   return (
     <div>
-      <h2>Liste des Produits</h2>
-      <ul>
-        {products.map((product, index) => (
-          <li key={index}>
-            {product.name} - {product.surname} - {product.price} €
-          </li>
-        ))}
-      </ul>
-      <button onClick={handlePrint}>Imprimer la Liste</button>
+      <Paper elevation={2}>
+        {' '}
+        {/* Paper fournit un fond et une ombre, ce qui est optionnel */}
+        <List>
+          {products.map((product, index) => (
+            <ListItem key={index}>
+              {product.name} - {product.surname} - {product.price} €
+            </ListItem>
+          ))}
+        </List>
+      </Paper>
+      <Box my={3}>
+        <Button variant="contained" color="primary" onClick={handlePrint}>
+          Imprimer la Liste
+        </Button>
+      </Box>
     </div>
   )
 }

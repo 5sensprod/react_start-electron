@@ -2,6 +2,9 @@ import React from 'react'
 import useProductCategory from './hooks/useProductCategory'
 import CategoryForm from './category/CategoryForm'
 import ProductForm from './product/ProductForm'
+import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button'
+import Box from '@mui/material/Box'
 
 const ProductCategoryForm = () => {
   const {
@@ -29,18 +32,28 @@ const ProductCategoryForm = () => {
   }
 
   return (
-    <div>
-      <h1>Gestion des Produits et Catégories</h1>
-      <CategoryForm
-        categoryName={newCategoryName}
-        onCategoryChange={setNewCategoryName}
-      />
-      <ProductForm
-        productData={productData}
-        onProductDataChange={setProductData}
-      />
-      <button onClick={handleSubmit}>Soumettre</button>
-    </div>
+    <>
+      <Typography variant="h4" component="h4" gutterBottom>
+        Gestion des Produits et Catégories
+      </Typography>
+      <Box my={3}>
+        <CategoryForm
+          categoryName={newCategoryName}
+          onCategoryChange={setNewCategoryName}
+        />
+      </Box>
+      <Box my={3}>
+        <ProductForm
+          productData={productData}
+          onProductDataChange={setProductData}
+        />
+      </Box>
+      <Box my={3}>
+        <Button variant="contained" color="primary" onClick={handleSubmit}>
+          Soumettre
+        </Button>
+      </Box>
+    </>
   )
 }
 
