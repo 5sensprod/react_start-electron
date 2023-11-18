@@ -1,8 +1,13 @@
 {
   "name": "stockap",
   "version": "0.1.0",
+  "icon": "assets/icon.ico",
   "private": true,
-  "main": "./main.js",
+  "homepage": ".",
+  "main": "./public/electron.js",
+  "description": "Logiciel de gestion commercial",
+  "author": "5sensprod",
+  "copyright": "5sensprod Copyright 2023",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -16,11 +21,12 @@
     "react-dom": "^18.2.0",
     "react-i18next": "^13.5.0",
     "react-scripts": "5.0.1",
-    "socket.io": "^4.7.2"
+    "electron-is-dev": "^2.0.0"
   },
   "scripts": {
+    "postinstall": "electron-builder install-app-deps",
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && copy public\\electron.js build\\electron.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron:serve": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
@@ -50,7 +56,6 @@
     "concurrently": "^7.0.0",
     "electron": "^27.1.0",
     "electron-builder": "^24.6.4",
-    "electron-is-dev": "^2.0.0",
     "electron-rebuild": "^3.2.9",
     "wait-on": "^6.0.0"
   },
@@ -59,6 +64,18 @@
     "directories": {
       "buildResources": "assets"
     },
+    "extraResources": [
+      {
+        "from": "./main.js",
+        "to": "resources/main.js"
+      }
+    ],
+    "files": [
+      "package.json",
+      "build/**/*",
+      "main/**/*",
+      "public/locales/**/*"
+    ],
     "mac": {
       "category": "public.app-category.finance"
     },
@@ -66,12 +83,18 @@
       "target": "nsis",
       "icon": "assets/icon.ico"
     },
+    "nsis": {
+      "oneClick": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "StockAp"
+    },
     "linux": {
       "target": [
         "AppImage",
         "deb"
       ],
-      "icon": "assets/icons"
+      "icon": "assets/iconas.ico"
     }
   }
 }

@@ -9,7 +9,7 @@ i18n
     lng: 'fr',
     fallbackLng: 'en',
     backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json', // assurez-vous que c'est accessible via HTTP en mode développement
+      loadPath: 'locales/{{lng}}/{{ns}}.json', // assurez-vous que c'est accessible via HTTP en mode développement
     },
     // autres options de configuration...
   })
