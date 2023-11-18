@@ -4,7 +4,10 @@ import TextField from '@mui/material/TextField'
 import Box from '@mui/material/Box'
 import { ipcRendererHelper } from '../utils/ipcRenderer'
 
-const ParentCategoryAutocomplete = () => {
+const ParentCategoryAutocomplete = ({
+  onParentCategoryChange,
+  onChildCategoryChange,
+}) => {
   const [categories, setCategories] = useState([])
   const [selectedParentCategory, setSelectedParentCategory] = useState(null)
   const [childCategories, setChildCategories] = useState([])
@@ -43,16 +46,18 @@ const ParentCategoryAutocomplete = () => {
     <Box
       sx={{
         display: 'flex',
-        flexDirection: 'column', // Organise les enfants en colonne
-        gap: 2, // Crée un espace entre les enfants
-        // Ajoute d'autres styles comme nécessaire
+        flexDirection: 'column',
+        gap: 2,
       }}
     >
       <Autocomplete
         id="combo-box-parent-categories"
         options={categories}
         getOptionLabel={(option) => option.name}
-        onChange={(event, value) => setSelectedParentCategory(value)}
+        onChange={(event, value) => {
+          setSelectedParentCategory(value)
+          onParentCategoryChange(value) // Appelle la fonction passée en prop
+        }}
         renderInput={(params) => (
           <TextField {...params} label="Catégorie Parente" />
         )}
@@ -62,11 +67,12 @@ const ParentCategoryAutocomplete = () => {
           id="combo-box-child-categories"
           options={childCategories}
           getOptionLabel={(option) => option.name}
+          onChange={(event, value) => {
+            onChildCategoryChange(value) // Appelle la fonction passée en prop
+          }}
           renderInput={(params) => (
             <TextField {...params} label="Catégorie Enfant" />
           )}
-          // Gestionnaire pour la sélection d'une option enfant, si nécessaire
-          // onChange={(event, value) => { /* Ta logique ici */ }}
         />
       )}
     </Box>

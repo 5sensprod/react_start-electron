@@ -9,6 +9,7 @@ import './i18n'
 import ProductCategoryForm from './components/ProductCategoryForm'
 import ProductList from './components/product/ProductList'
 import ParentCategoryAutocomplete from './components/ui/ParentCategoryAutocomplete'
+import AddProductForm from './components/AddProductForm '
 
 const App = () => {
   const [reloadProducts, setReloadProducts] = useState(false)
@@ -32,6 +33,12 @@ const App = () => {
         </Typography>
         <Box my={4}>
           <ProductList key={reloadProducts.toString()} />
+        </Box>
+        <Typography variant="h4" gutterBottom>
+          Ajout produit
+        </Typography>
+        <Box my={4}>
+          <AddProductForm />
         </Box>
       </Container>
     </ThemeProvider>

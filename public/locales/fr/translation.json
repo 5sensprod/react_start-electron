@@ -1,9 +1,10 @@
 {
   "productForm": {
     "labels": {
-      "name": "Nom",
+      "name": "Référence",
       "surname": "Prénom",
       "price": "Prix",
+      "brand": "Marque",
       "category": "Catégorie"
     }
   }
