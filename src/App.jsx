@@ -20,7 +20,7 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <Container maxWidth="lg" my={3}>
         <Typography variant="h4" gutterBottom>
-          Ajout produit
+          Ajouter Fiche Produit
         </Typography>
         <Box my={4}>
           <AddProductForm onProductAdded={handleProductAdded} />
