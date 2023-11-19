@@ -1,7 +1,6 @@
 const { BrowserWindow } = require('electron')
-
-const path = require('path')
 const isDev = require('electron-is-dev')
+const path = require('path')
 
 let mainWindow = null
 
@@ -10,23 +9,25 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    icon: 'assets/icon.ico',
+    icon: path.join(__dirname, '../assets/icon.ico'),
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      enableRemoteModule: true,
+      nodeIntegration: true, // Remarque: ceci est non sécurisé et déprécié
+      contextIsolation: false, // Devrait être vrai pour la sécurité
+      enableRemoteModule: true, // Devrait être évité si possible
+      // Il est recommandé d'utiliser preload scripts et contextBridge pour la sécurité
     },
   })
 
-  // et charger l'index.html de l'application.
-  mainWindow.loadURL('http://localhost:3000')
+  // Charger l'URL de développement ou de production
+  const startURL = isDev
+    ? 'http://localhost:3000'
+    : `file://${path.join(__dirname, '../build/index.html')}`
+  mainWindow.loadURL(startURL)
 
   // Émis lorsque la fenêtre est fermée.
-  mainWindow.loadURL(
-    isDev
-      ? 'http://localhost:3000'
-      : `file://${path.join(__dirname, '../build/index.html')}`,
-  )
+  mainWindow.on('closed', () => {
+    mainWindow = null
+  })
 
   return mainWindow
 }
