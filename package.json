@@ -37,7 +37,7 @@
     "build": "react-scripts build && copy public\\electron.js build\\electron.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server:start": "node ./server/server.js",
+    "server:start": "cross-env NODE_ENV=development node ./server/server.js",
     "electron:serve": "concurrently --kill-others-on-fail \"npm run server:start\" \"npm run start\" \"wait-on http://localhost:3000 && npm run electron:start\"",
     "electron:build": "npm run build && electron-builder build",
     "electron:start": "electron .",
@@ -64,6 +64,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "concurrently": "^7.0.0",
+    "cross-env": "^7.0.3",
     "electron": "^27.1.0",
     "electron-builder": "^24.6.4",
     "electron-rebuild": "^3.2.9",
@@ -85,6 +86,7 @@
       "build/**/*",
       "main/**/*",
       "public/locales/**/*",
+      "preload.js",
       {
         "from": "server/",
         "to": "server/",

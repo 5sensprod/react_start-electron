@@ -6,8 +6,8 @@ const { setupIpcHandlers } = require('../main/ipcHandlers')
 let mainWindow
 
 function startExpressServer() {
-  // Importez le serveur Express ou le fichier qui démarre le serveur
-  require('../server/server')() // Assurez-vous que cela démarre le serveur Express
+  const startServer = require('../server/server') // Importez la fonction startServer
+  startServer() // Démarrez le serveur Express
 }
 
 app.on('ready', () => {

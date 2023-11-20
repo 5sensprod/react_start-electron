@@ -1,18 +1,8 @@
 const express = require('express')
 const cors = require('cors')
-const path = require('path')
 const app = express()
 const PORT = 5000
 const { getProducts } = require('../main/database/productDbOperations.js')
-
-// Servez les fichiers statiques si vous êtes en mode production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../build')))
-
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../build/index.html'))
-  })
-}
 
 // Configurez CORS pour autoriser les requêtes de votre domaine client
 app.use(
@@ -41,7 +31,15 @@ app.get('/get-products', (req, res) => {
   })
 })
 
-// Démarrer le serveur
-app.listen(PORT, () => console.log(`Express server listening on port ${PORT}`))
+function startServer() {
+  app.listen(PORT, () =>
+    console.log(`Express server listening on port ${PORT}`),
+  )
+}
 
-module.exports = app
+module.exports = startServer
+
+// marche en dev
+// app.listen(PORT, () => console.log(`Express server listening on port ${PORT}`))
+
+// module.exports = app
