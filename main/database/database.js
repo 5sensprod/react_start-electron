@@ -1,8 +1,26 @@
 const Datastore = require('nedb')
 const path = require('path')
 
-// Chemin constant pour le dossier de données de l'application
-const baseDatabasePath = path.join(__dirname, '../../data') // Chemin relatif au répertoire de la base de données
+// Utilisez une fonction pour déterminer si l'application est empaquetée avec Electron.
+function getBaseDatabasePath() {
+  // Vérifiez si 'app' est disponible via 'electron' pour déterminer si vous êtes dans l'environnement Electron.
+  let electronApp
+  try {
+    electronApp = require('electron').app
+  } catch (e) {
+    // Si 'electron' ne peut pas être chargé, alors vous n'êtes pas dans l'environnement Electron.
+    electronApp = null
+  }
+
+  // Si dans Electron et empaqueté, utilisez 'process.resourcesPath', sinon utilisez le chemin de développement.
+  if (electronApp && electronApp.isPackaged) {
+    return path.join(process.resourcesPath, 'data')
+  } else {
+    return path.join(__dirname, '../../data')
+  }
+}
+
+const baseDatabasePath = getBaseDatabasePath()
 
 let db = {}
 
@@ -22,32 +40,3 @@ db.categories = new Datastore({
 })
 
 module.exports = db
-
-//pour le buid
-// const Datastore = require('nedb')
-// const path = require('path')
-// const { app } = require('electron')
-
-// const isPackaged = app.isPackaged
-// const baseDatabasePath = isPackaged
-//   ? path.join(process.resourcesPath, 'data')
-//   : path.join(__dirname, '../../data')
-
-// let db = {}
-
-// db.users = new Datastore({
-//   filename: path.join(baseDatabasePath, 'users.db'),
-//   autoload: true,
-// })
-
-// db.products = new Datastore({
-//   filename: path.join(baseDatabasePath, 'products.db'),
-//   autoload: true,
-// })
-
-// db.categories = new Datastore({
-//   filename: path.join(baseDatabasePath, 'categories.db'),
-//   autoload: true,
-// })
-
-// module.exports = db
