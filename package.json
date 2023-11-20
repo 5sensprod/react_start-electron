@@ -28,7 +28,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^13.5.0",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "react-table": "^7.8.0"
   },
   "scripts": {
@@ -40,7 +40,8 @@
     "server:start": "node ./server/server.js",
     "electron:serve": "concurrently --kill-others-on-fail \"npm run server:start\" \"npm run start\" \"wait-on http://localhost:3000 && npm run electron:start\"",
     "electron:build": "npm run build && electron-builder build",
-    "electron:start": "electron ."
+    "electron:start": "electron .",
+    "electron:trace": "node --trace-deprecation node_modules/.bin/electron ."
   },
   "eslintConfig": {
     "extends": [
@@ -83,7 +84,14 @@
       "package.json",
       "build/**/*",
       "main/**/*",
-      "public/locales/**/*"
+      "public/locales/**/*",
+      {
+        "from": "server/",
+        "to": "server/",
+        "filter": [
+          "**/*"
+        ]
+      }
     ],
     "mac": {
       "category": "public.app-category.finance"

@@ -6,18 +6,18 @@ import theme from './theme/theme'
 
 import './i18n'
 import ProductList from './components/product/ProductListApi'
-import AddProductForm from './components/AddProductForm '
+// import AddProductForm from './components/AddProductForm '
 
 const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <Container maxWidth="lg" my={3}>
-        <Typography variant="h4" gutterBottom>
+        {/* <Typography variant="h4" gutterBottom>
           Ajouter Fiche Produit
         </Typography>
         <Box my={4}>
           <AddProductForm />
-        </Box>
+        </Box> */}
         <Typography variant="h4" gutterBottom>
           Liste des Produits
         </Typography>

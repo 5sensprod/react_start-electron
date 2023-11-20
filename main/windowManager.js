@@ -11,9 +11,9 @@ function createWindow() {
     height: 600,
     icon: path.join(__dirname, '../assets/icon.ico'),
     webPreferences: {
-      nodeIntegration: true, // Remarque: ceci est non sécurisé et déprécié
-      contextIsolation: false, // Devrait être vrai pour la sécurité
-      enableRemoteModule: true, // Devrait être évité si possible
+      //   nodeIntegration: true,  Remarque: ceci est non sécurisé et déprécié
+      contextIsolation: true, // Devrait être vrai pour la sécurité
+      //  enableRemoteModule: true,  Devrait être évité si possible
       // Il est recommandé d'utiliser preload scripts et contextBridge pour la sécurité
     },
   })
