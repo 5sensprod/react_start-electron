@@ -41,7 +41,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server:start": "cross-env NODE_ENV=development node ./server/server.js",
-    "electron:serve": "concurrently --kill-others-on-fail \"npm run server:start\" \"npm run start\" \"wait-on http://localhost:3000 && npm run electron:start\"",
+    "electron:serve": "concurrently --kill-others-on-fail \"npm run start\" \"wait-on http://localhost:3000 && npm run electron:start\"",
     "electron:build": "cross-env NODE_ENV=production npm run build && electron-builder build",
     "electron:start": "electron .",
     "electron:trace": "node --trace-deprecation node_modules/.bin/electron ."
@@ -78,24 +78,7 @@
     "directories": {
       "buildResources": "assets"
     },
-    "extraResources": [
-      {
-        "from": "./catalogue",
-        "to": "catalogue",
-        "filter": "**/*"
-      },
-      {
-        "from": "./main.js",
-        "to": "resources/main.js"
-      },
-      {
-        "from": "./data",
-        "to": "data",
-        "filter": [
-          "**/*"
-        ]
-      }
-    ],
+    "extraResources": [],
     "files": [
       "package.json",
       "build/**/*",
