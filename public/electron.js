@@ -4,10 +4,14 @@ const { createWindow } = require('../main/windowManager')
 const { setupIpcHandlers } = require('../main/ipcHandlers')
 
 let mainWindow
+const PORT = 5000 // Assurez-vous que cette valeur de port est cohérente avec ce que votre serveur Express attend.
 
 function startExpressServer() {
-  const startServer = require('../server/server') // Importez la fonction startServer
-  startServer() // Démarrez le serveur Express
+  const expressApp = require('../server/server') // Importez l'application Express
+  expressApp.listen(PORT, () => {
+    // Démarrez le serveur Express en écoutant sur le port spécifié
+    console.log(`Express server listening on port ${PORT}`)
+  })
 }
 
 app.on('ready', () => {

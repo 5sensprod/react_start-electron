@@ -31,13 +31,14 @@ app.get('/get-products', (req, res) => {
   })
 })
 
-function startServer() {
+if (require.main === module) {
   app.listen(PORT, () =>
     console.log(`Express server listening on port ${PORT}`),
   )
 }
 
-module.exports = startServer
+// Exporter l'app pour pouvoir la démarrer à partir de electron.js en mode production
+module.exports = app
 
 // marche en dev
 // app.listen(PORT, () => console.log(`Express server listening on port ${PORT}`))
