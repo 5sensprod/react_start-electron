@@ -10,6 +10,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Link,
 } from '@mui/material'
 
 const ProductList = () => {
@@ -28,24 +29,50 @@ const ProductList = () => {
     fetchProducts()
   }, [])
 
-  // Création des colonnes pour react-table
-  const columns = useMemo(
-    () =>
-      products.length > 0
-        ? Object.keys(products[0]).map((key) => ({
-            Header: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize headers
-            accessor: key,
-          }))
-        : [],
-    [products],
-  )
+  // Générer les colonnes en mappant les clés des produits
+  const columns = useMemo(() => {
+    if (products.length === 0) {
+      return []
+    }
+
+    const sampleProduct = products[0]
+    const mappedColumns = Object.keys(sampleProduct).map((key) => {
+      // Pour les champs qui nécessitent un rendu personnalisé, définissez-les ici
+      if (key === 'ficheTechnique') {
+        return {
+          Header: 'Fiche Technique',
+          accessor: key,
+          Cell: ({ value }) =>
+            value ? (
+              <Link href={value} target="_blank">
+                PDF
+              </Link>
+            ) : (
+              'N/A'
+            ),
+        }
+      }
+      // D'autres clés avec rendu personnalisé peuvent être ajoutées ici
+      // ...
+
+      // Pour les autres clés, utilisez le mappage automatique
+      return {
+        Header: key.charAt(0).toUpperCase() + key.slice(1),
+        accessor: key,
+      }
+    })
+
+    return mappedColumns
+  }, [products])
 
   // Utilisation de useTable hook
+  const tableInstance = useTable({
+    columns,
+    data: products,
+  })
+
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({
-      columns,
-      data: products,
-    })
+    tableInstance
 
   // Rendu de la table avec les composants MUI
   return (
