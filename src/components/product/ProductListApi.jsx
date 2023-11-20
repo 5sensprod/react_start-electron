@@ -1,4 +1,3 @@
-// ProductListApi.jsx
 import React, { useState, useEffect, useMemo } from 'react'
 import { useTable } from 'react-table'
 import { getProducts } from '../../api/productService'
@@ -15,6 +14,7 @@ import {
 
 const ProductList = () => {
   const [products, setProducts] = useState([])
+  const serverBaseUrl = 'http://localhost:5000'
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -29,52 +29,73 @@ const ProductList = () => {
     fetchProducts()
   }, [])
 
-  // Générer les colonnes en mappant les clés des produits
   const columns = useMemo(() => {
     if (products.length === 0) {
       return []
     }
 
-    const sampleProduct = products[0]
-    const mappedColumns = Object.keys(sampleProduct).map((key) => {
-      // Pour les champs qui nécessitent un rendu personnalisé, définissez-les ici
-      if (key === 'ficheTechnique') {
-        return {
-          Header: 'Fiche Technique',
-          accessor: key,
-          Cell: ({ value }) =>
-            value ? (
-              <Link href={value} target="_blank">
-                PDF
-              </Link>
-            ) : (
-              'N/A'
-            ),
-        }
+    // Nous allons définir une fonction pour chaque type de donnée que nous voulons afficher différemment
+    const renderCell = (key, value) => {
+      switch (key) {
+        case 'ficheTechnique':
+          return value ? (
+            <Link href={value} target="_blank">
+              PDF
+            </Link>
+          ) : (
+            'N/A'
+          )
+        case 'photos':
+          // Pour les photos, nous retournons des images au lieu de liens
+          return (
+            <div>
+              {value.map((photo, index) => (
+                <img
+                  key={index}
+                  src={`${serverBaseUrl}/${photo.replace(/\\/g, '/')}`} // Remplacez les backslashes par des slashes pour les URLs
+                  alt={`Product ${index}`} // Texte alternatif descriptif
+                  style={{ maxWidth: '100px', maxHeight: '100px' }} // Style exemple
+                />
+              ))}
+            </div>
+          )
+        case 'videos':
+          // Pour les vidéos, nous retournons des liens cliquables
+          return value.map((video, index) => (
+            <Link key={index} href={video} target="_blank">{`Video ${
+              index + 1
+            }`}</Link>
+          ))
+        case 'SKU':
+          // Pour SKU, qui est un tableau d'objets, nous affichons chaque propriété
+          return value.map((sku, index) => (
+            <div key={index}>
+              {Object.entries(sku).map(([field, val]) => (
+                <p key={field}>{`${field}: ${val}`}</p>
+              ))}
+            </div>
+          ))
+        default:
+          // Par défaut, nous retournons simplement la valeur
+          return value
       }
-      // D'autres clés avec rendu personnalisé peuvent être ajoutées ici
-      // ...
+    }
 
-      // Pour les autres clés, utilisez le mappage automatique
+    // Maintenant nous mappons les clés des produits à des colonnes
+    return Object.keys(products[0]).map((key) => {
       return {
         Header: key.charAt(0).toUpperCase() + key.slice(1),
         accessor: key,
+        Cell: ({ cell: { value } }) => renderCell(key, value),
       }
     })
+  }, [products, serverBaseUrl])
 
-    return mappedColumns
-  }, [products])
-
-  // Utilisation de useTable hook
-  const tableInstance = useTable({
-    columns,
-    data: products,
-  })
+  const tableInstance = useTable({ columns, data: products })
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance
 
-  // Rendu de la table avec les composants MUI
   return (
     <TableContainer component={Paper}>
       <Table {...getTableProps()}>

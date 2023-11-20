@@ -13,7 +13,8 @@ const productSchema = Joi.object({
   gencode: Joi.string().allow(null),
   stock: Joi.number().integer().min(0).allow(null),
   ficheTechnique: Joi.string().uri().allow(null),
-  photos: Joi.array().items(Joi.string().uri()).allow(null),
+  photos: Joi.array().items(Joi.string()).allow(null),
+  // ... le reste
   videos: Joi.array().items(Joi.string().uri()).allow(null),
   SKU: Joi.array()
     .items(
