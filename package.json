@@ -80,6 +80,11 @@
     },
     "extraResources": [
       {
+        "from": "./catalogue",
+        "to": "catalogue",
+        "filter": "**/*"
+      },
+      {
         "from": "./main.js",
         "to": "resources/main.js"
       },
