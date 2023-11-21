@@ -1,13 +1,7 @@
-const fs = require('fs')
-const path = require('path')
-const electron = require('electron')
 const {
-  addProduct,
+  addProduct: addProductToDB,
   getProducts,
 } = require('../../main/database/productDbOperations')
-const productSchema = require('../schemas/productSchema') // Assurez-vous que le chemin d'accès est correct
-const userDataPath = (electron.app || electron.remote.app).getPath('userData')
-const cataloguePath = path.join(userDataPath, 'catalogue')
 
 exports.getProducts = (req, res) => {
   getProducts((err, products) => {
@@ -23,61 +17,21 @@ exports.getProducts = (req, res) => {
 }
 
 exports.addProduct = (req, res) => {
-  const { error, value } = productSchema.validate(req.body)
-  if (error) {
-    return res.status(400).json({
-      success: false,
-      message: 'Les données du produit ne sont pas valides',
-      error: error.details[0].message,
-    })
-  }
-
-  // Copiez les images dans le dossier 'catalogue'
-  const reference = value.reference
-  const photos = value.photos || []
-  const destinationDir = path.join(cataloguePath, reference)
-
-  // Vérifiez si le dossier existe, sinon créez-le
-  if (!fs.existsSync(destinationDir)) {
-    fs.mkdirSync(destinationDir, { recursive: true })
-  }
-  try {
-    if (!fs.existsSync(destinationDir)) {
-      fs.mkdirSync(destinationDir, { recursive: true })
+  // La validation et la manipulation des images sont déjà gérées par les middlewares
+  addProductToDB(req.body, (err, newDoc) => {
+    if (err) {
+      res.status(500).json({
+        success: false,
+        message: "Erreur lors de l'ajout du produit",
+        error: err,
+      })
+    } else {
+      res.status(201).json({
+        success: true,
+        message: 'Produit ajouté avec succès',
+        product: newDoc,
+        // Ici vous pouvez ajouter les URLs d'images si nécessaire
+      })
     }
-
-    photos.forEach((photoPath) => {
-      const filename = path.basename(photoPath)
-      const destPath = path.join(destinationDir, filename)
-      fs.copyFileSync(photoPath, destPath)
-    })
-
-    // Mettez à jour le chemin des photos pour utiliser le nouveau chemin
-    value.photos = photos.map((photo) =>
-      path.join('catalogue', reference, path.basename(photo)),
-    )
-
-    // Ajout du produit avec les données validées
-    addProduct(value, (err, newDoc) => {
-      if (err) {
-        res.status(500).json({
-          success: false,
-          message: "Erreur lors de l'ajout du produit",
-          error: err,
-        })
-      } else {
-        res.status(201).json({
-          success: true,
-          message: 'Produit ajouté avec succès',
-          product: newDoc,
-        })
-      }
-    })
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Erreur lors de la copie des images',
-      error: err.message,
-    })
-  }
+  })
 }
