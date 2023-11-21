@@ -3,14 +3,14 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const path = require('path')
 const productRoutes = require('./routes/productRoutes')
-const app = express()
-const PORT = process.env.PORT || 5000
-
 const electron = require('electron')
+
+const app = express()
 const userDataPath = (electron.app || electron.remote.app).getPath('userData')
 const cataloguePath = path.join(userDataPath, 'catalogue')
 
 app.use('/catalogue', express.static(cataloguePath))
+app.use(express.static(path.join(__dirname, '..', 'public')))
 
 app.use(
   cors({
@@ -25,10 +25,18 @@ app.get('/test', (req, res) => {
   res.send('Le serveur fonctionne correctement.')
 })
 
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`Serveur express écoutant sur le port ${PORT}`)
-  })
-} else {
-  module.exports = app
-}
+app.post('/scan', (req, res) => {
+  const scannedData = req.body.data
+  console.log('Données scannées reçues:', scannedData)
+  res.status(200).json({ message: 'Données scannées reçues avec succès.' })
+})
+
+app.get('/scan', (req, res) => {
+  res.send('Cette route attend une requête POST avec les données scannées.')
+})
+
+app.get('/testcamera', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'camera.html'))
+})
+
+module.exports = app // Export the Express app
