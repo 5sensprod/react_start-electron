@@ -44,6 +44,15 @@ const theme = createTheme({
         },
       },
     },
+
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          padding: '10px',
+          height: '40px',
+        },
+      },
+    },
     // ... autres composants comme MuiAppBar, MuiCard, etc.
   },
   // Ajoutez d'autres personnalisations globales ici

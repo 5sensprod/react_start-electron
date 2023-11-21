@@ -3,9 +3,9 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { ThemeProvider } from '@mui/material/styles'
 import theme from './theme/theme'
-
 import './i18n'
-import ProductList from './components/product/ProductListApi'
+// import ProductList from './components/product/ProductListApi'
+import ProductSearch from './components/product/ProductSearch'
 // import AddProductForm from './components/AddProductForm '
 
 const App = () => {
@@ -22,7 +22,8 @@ const App = () => {
           Liste des Produits
         </Typography>
         <Box my={4}>
-          <ProductList />
+          {/* <ProductList /> */}
+          <ProductSearch />
         </Box>
       </Container>
     </ThemeProvider>

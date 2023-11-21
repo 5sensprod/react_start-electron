@@ -18,6 +18,20 @@ exports.getProducts = (req, res) => {
 
 exports.addProduct = (req, res) => {
   // La validation et la manipulation des images sont déjà gérées par les middlewares
+
+  // Vérifiez si 'SKU' a un format numérique
+  if (req.body.SKU && !isNaN(Number(req.body.SKU))) {
+    req.body.gencode = req.body.SKU // Attribuer la valeur de SKU à gencode
+    req.body.variable = false // Mettre variable à false car SKU est un format numérique
+  } else if (req.body.gencode === null || req.body.gencode === undefined) {
+    req.body.variable = true // Si 'gencode' est null, alors 'variable' doit être true
+  } else {
+    // Si 'gencode' est fourni, vous pouvez soit laisser 'variable' tel qu'il est,
+    // soit définir une logique par défaut ici.
+    req.body.variable = req.body.variable || false
+  }
+
+  // Ajouter le produit à la base de données
   addProductToDB(req.body, (err, newDoc) => {
     if (err) {
       res.status(500).json({

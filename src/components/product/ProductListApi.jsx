@@ -31,14 +31,14 @@ const ProductList = () => {
   const columns = React.useMemo(
     () => [
       {
-        Header: 'Photo',
+        Header: '',
         accessor: 'photos',
         Cell: ({ value }) =>
           value && value.length > 0 ? (
             <img
               src={`${serverBaseUrl}/${value[0].replace(/\\/g, '/')}`}
               alt={`Product`}
-              style={{ maxWidth: '100px', maxHeight: '100px' }}
+              style={{ maxWidth: '50px', maxHeight: '40px' }}
             />
           ) : null,
       },
@@ -47,7 +47,11 @@ const ProductList = () => {
         accessor: 'reference',
       },
       {
-        Header: 'Prix',
+        Header: 'Marque',
+        accessor: 'marque',
+      },
+      {
+        Header: 'Prix public',
         accessor: 'prixVente',
       },
       {
