@@ -1,10 +1,13 @@
 const fs = require('fs')
 const path = require('path')
+const electron = require('electron')
 const {
   addProduct,
   getProducts,
 } = require('../../main/database/productDbOperations')
 const productSchema = require('../schemas/productSchema') // Assurez-vous que le chemin d'accès est correct
+const userDataPath = (electron.app || electron.remote.app).getPath('userData')
+const cataloguePath = path.join(userDataPath, 'catalogue')
 
 exports.getProducts = (req, res) => {
   getProducts((err, products) => {
@@ -32,8 +35,12 @@ exports.addProduct = (req, res) => {
   // Copiez les images dans le dossier 'catalogue'
   const reference = value.reference
   const photos = value.photos || []
-  const destinationDir = path.join(__dirname, '..', 'catalogue', reference)
+  const destinationDir = path.join(cataloguePath, reference)
 
+  // Vérifiez si le dossier existe, sinon créez-le
+  if (!fs.existsSync(destinationDir)) {
+    fs.mkdirSync(destinationDir, { recursive: true })
+  }
   try {
     if (!fs.existsSync(destinationDir)) {
       fs.mkdirSync(destinationDir, { recursive: true })

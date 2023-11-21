@@ -6,7 +6,11 @@ const productRoutes = require('./routes/productRoutes')
 const app = express()
 const PORT = process.env.PORT || 5000
 
-app.use('/catalogue', express.static(path.join(__dirname, 'catalogue')))
+const electron = require('electron')
+const userDataPath = (electron.app || electron.remote.app).getPath('userData')
+const cataloguePath = path.join(userDataPath, 'catalogue')
+
+app.use('/catalogue', express.static(cataloguePath))
 
 app.use(
   cors({
