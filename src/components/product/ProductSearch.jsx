@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useCallback } from 'react'
 import {
   Table,
   TableBody,
@@ -10,94 +10,69 @@ import {
   TextField,
   InputAdornment,
   IconButton,
+  CircularProgress,
+  Alert,
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
-import { getProducts } from '../../api/productService'
+import useGlobalScannedDataHandler from '../hooks/useGlobalScannedDataHandler'
+import useWebSocket from '../hooks/useWebSocket'
+import useProducts from '../hooks/useProducts'
+import useSearch from '../hooks/useSearch'
 
 const ProductSearch = () => {
-  const [products, setProducts] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
+  const [isScannerMode, setIsScannerMode] = useState(true)
+  const { products, loading, error } = useProducts()
+  const filteredProducts = useSearch(products, searchTerm)
 
-  useEffect(() => {
-    // Établissement de la connexion WebSocket
-    const ws = new WebSocket('ws://192.168.1.10:5000')
-
-    ws.onmessage = (event) => {
-      // Vérifiez si le message est un Blob
-      if (event.data instanceof Blob) {
-        // Créer un FileReader pour lire le Blob
-        const reader = new FileReader()
-
-        // Définir ce qui se passe lorsque le FileReader a fini de lire le Blob
-        reader.onload = () => {
-          // Le résultat est un string de données lues depuis le Blob
-          setSearchTerm(reader.result.toString())
-        }
-
-        // Lire le contenu du Blob en tant que texte
-        reader.readAsText(event.data)
-      } else {
-        // Si ce n'est pas un Blob, on convertit directement les données en texte
-        setSearchTerm(event.data.toString())
-      }
-    }
-
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error)
-    }
-
-    ws.onopen = () => {
-      console.log('WebSocket connection established')
-    }
-
-    // Nettoyage de la connexion WebSocket lors du démontage du composant
-    return () => {
-      ws.close()
-    }
-  }, [])
-
-  useEffect(() => {
-    const fetchProducts = async () => {
+  // Définir les fonctions de rappel pour les événements WebSocket
+  const handleWsMessage = useCallback((event) => {
+    if (event.data instanceof Blob) {
+      const reader = new FileReader()
+      reader.onload = () => setSearchTerm(reader.result)
+      reader.readAsText(event.data)
+    } else {
       try {
-        const response = await getProducts() // Assurez-vous que cette fonction est correctement implémentée pour récupérer les produits
-        setProducts(response.products)
+        const data = JSON.parse(event.data)
+        if (data && data.type === 'CHANGE_MODE') {
+          setIsScannerMode(data.isScannerMode)
+        } else {
+          setSearchTerm(event.data)
+        }
       } catch (error) {
-        console.error('There was an error fetching the products', error)
+        console.error('Error parsing message:', error)
       }
     }
-
-    fetchProducts()
   }, [])
+
+  const handleWsOpen = useCallback(() => {
+    console.log('WebSocket connection established')
+  }, [])
+  const handleWsError = useCallback((error) => {
+    console.error('WebSocket error:', error)
+  }, [])
+  const handleWsClose = useCallback(() => {
+    console.log('WebSocket closed')
+  }, [])
+
+  useWebSocket(
+    'ws://192.168.1.10:5000',
+    handleWsMessage,
+    handleWsError,
+    handleWsOpen,
+    handleWsClose,
+  )
+
+  useGlobalScannedDataHandler(isScannerMode, setSearchTerm)
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value)
   }
 
-  const filteredProducts = products.filter((product) => {
-    const lowerCaseSearchTerm = searchTerm.toString().toLowerCase()
-    const refIncludes = product.reference
-      ? product.reference.toLowerCase().includes(lowerCaseSearchTerm)
-      : false
-    const brandIncludes = product.marque
-      ? product.marque.toLowerCase().includes(lowerCaseSearchTerm)
-      : false
-    const gencodeIncludes = product.gencode
-      ? product.gencode.toString().includes(lowerCaseSearchTerm)
-      : false
-    const skuIncludes =
-      product.SKU &&
-      Array.isArray(product.SKU) &&
-      product.SKU.some(
-        (sku) =>
-          sku.diapason.toLowerCase().includes(lowerCaseSearchTerm) ||
-          sku.gencode.toString().includes(lowerCaseSearchTerm),
-      )
-
-    return refIncludes || brandIncludes || gencodeIncludes || skuIncludes
-  })
-
   return (
     <div>
+      {loading && <CircularProgress />}
+      {error && <Alert severity="error">{error.message}</Alert>}
       <TextField
         id="search-input"
         label="Rechercher un produit"

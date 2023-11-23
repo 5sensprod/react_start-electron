@@ -13,11 +13,18 @@ const userDataPath = (electron.app || electron.remote.app).getPath('userData')
 const cataloguePath = path.join(userDataPath, 'catalogue')
 
 app.use('/catalogue', express.static(cataloguePath))
-app.use(express.static(path.join(__dirname, '..', 'public')))
+// app.use(express.static(path.join(__dirname, '..', 'public')))
+
+app.use(express.static(path.join(__dirname, '..', 'build')))
 
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: [
+      'http://192.168.1.10:5000',
+      'http://192.168.1',
+      'http://localhost:3000',
+      'http://localhost:5000',
+    ],
   }),
 )
 app.use(bodyParser.json())
@@ -59,10 +66,6 @@ wss.on('connection', function connection(ws) {
       }
     })
   })
-
-  // Supprimez ou commentez la ligne suivante, car elle envoie "Hello from Electron!" inutilement
-  // ws.send('Hello from Electron!');
 })
 
-// Exportez `server` au lieu de `app` pour pouvoir attacher le WebSocket
 module.exports = server
