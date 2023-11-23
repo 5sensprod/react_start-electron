@@ -4,10 +4,7 @@ import Typography from '@mui/material/Typography'
 import { ThemeProvider } from '@mui/material/styles'
 import theme from './theme/theme'
 import './i18n'
-// import ProductList from './components/product/ProductListApi'
 import ProductSearch from './components/product/ProductSearch'
-// import AddProductForm from './components/AddProductForm '
-// import ScanDisplayComponent from './components/ScanDisplay'
 
 const App = () => {
   return (

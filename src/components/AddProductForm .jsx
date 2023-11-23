@@ -45,8 +45,6 @@ const AddProductForm = () => {
           `La valeur doit être supérieure ou égale à ${schema.min}`
         isValid = false
       }
-
-      // Ajouter ici d'autres règles de validation si nécessaire
     })
 
     setErrors(newErrors)
