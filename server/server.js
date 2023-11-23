@@ -5,6 +5,9 @@ const path = require('path')
 const productRoutes = require('./routes/productRoutes')
 const electron = require('electron')
 
+const WebSocket = require('ws')
+const http = require('http')
+
 const app = express()
 const userDataPath = (electron.app || electron.remote.app).getPath('userData')
 const cataloguePath = path.join(userDataPath, 'catalogue')
@@ -39,4 +42,27 @@ app.get('/testcamera', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'camera.html'))
 })
 
-module.exports = app // Export the Express app
+const server = http.createServer(app)
+
+const wss = new WebSocket.Server({ server })
+
+wss.on('connection', function connection(ws) {
+  console.log('Client connected')
+
+  ws.on('message', function incoming(message) {
+    console.log('received: %s', message)
+
+    // Retransmettre le message à tous les clients connectés
+    wss.clients.forEach(function each(client) {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message)
+      }
+    })
+  })
+
+  // Supprimez ou commentez la ligne suivante, car elle envoie "Hello from Electron!" inutilement
+  // ws.send('Hello from Electron!');
+})
+
+// Exportez `server` au lieu de `app` pour pouvoir attacher le WebSocket
+module.exports = server

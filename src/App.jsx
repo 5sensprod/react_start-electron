@@ -7,6 +7,7 @@ import './i18n'
 // import ProductList from './components/product/ProductListApi'
 import ProductSearch from './components/product/ProductSearch'
 // import AddProductForm from './components/AddProductForm '
+import ScanDisplayComponent from './components/ScanDisplay'
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
         </Typography>
         <Box my={4}>
           {/* <ProductList /> */}
+          {/* <ScanDisplayComponent /> */}
           <ProductSearch />
         </Box>
       </Container>

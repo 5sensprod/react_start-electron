@@ -5,10 +5,10 @@ const { setupIpcHandlers } = require('../main/ipcHandlers')
 let mainWindow
 
 function startExpressServer() {
-  const expressApp = require('../server/server') // Importez l'application Express
+  const server = require('../server/server') // Importez le serveur HTTP
   const PORT = 5000
-  expressApp.listen(PORT, () => {
-    console.log(`Express server listening on port ${PORT}`)
+  server.listen(PORT, () => {
+    console.log(`Express and WebSocket server listening on port ${PORT}`)
   })
 }
 

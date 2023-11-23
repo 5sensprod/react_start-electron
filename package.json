@@ -34,7 +34,8 @@
     "react-dom": "^18.2.0",
     "react-i18next": "^13.5.0",
     "react-scripts": "^5.0.1",
-    "react-table": "^7.8.0"
+    "react-table": "^7.8.0",
+    "ws": "^8.14.2"
   },
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
