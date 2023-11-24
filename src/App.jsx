@@ -4,7 +4,10 @@ import Typography from '@mui/material/Typography'
 import { ThemeProvider } from '@mui/material/styles'
 import theme from './theme/theme'
 import './i18n'
-import ProductSearch from './components/product/ProductSearch'
+import ProductPage from './components/pages/ProductPage'
+// import ProductSearch from './components/product/ProductSearch'
+// import SearchBar from './components/product/SearchBar'
+// import ProductList from './components/product/ProductList'
 
 const App = () => {
   return (
@@ -14,7 +17,10 @@ const App = () => {
           Liste des Produits
         </Typography>
         <Box my={4}>
-          <ProductSearch />
+          {/* <ProductSearch /> */}
+          {/* <SearchBar />
+          <ProductList /> */}
+          <ProductPage />
         </Box>
       </Container>
     </ThemeProvider>
