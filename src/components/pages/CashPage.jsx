@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import SearchBar from '../product/SearchBar'
 import ProductList from '../product/ProductList'
-const ProductPage = () => {
+const CashPage = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [isScannerMode, setIsScannerMode] = useState(false)
 
@@ -18,4 +18,4 @@ const ProductPage = () => {
   )
 }
 
-export default ProductPage
+export default CashPage

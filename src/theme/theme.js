@@ -39,8 +39,28 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
+          color: 'white',
           background: '#2b75bf',
           borderRadius: 8, // Boutons avec des coins arrondis
+        },
+      },
+    },
+
+    MuiCardContent: {
+      styleOverrides: {
+        root: {
+          padding: '0px',
+          margin: '0px',
+          paddingBottom: '1px',
+        },
+      },
+    },
+    MuiCardContentLastChild: {
+      styleOverrides: {
+        root: {
+          padding: '0px',
+          margin: '0px',
+          paddingBottom: '1px',
         },
       },
     },
