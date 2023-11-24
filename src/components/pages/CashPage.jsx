@@ -106,7 +106,7 @@ const CashPage = () => {
 
     try {
       await addInvoice(newInvoice)
-      setCart([])
+      setCart([]) // Vider le panier après l'avoir mis en attente
     } catch (error) {
       console.error('Erreur lors de la mise en attente de la facture :', error)
     }
@@ -143,6 +143,7 @@ const CashPage = () => {
               >
                 Mettre en attente
               </Button>
+
               {loading && <p>Chargement des factures...</p>}
               {error && <p>Erreur : {error.message}</p>}
               <PendingInvoices

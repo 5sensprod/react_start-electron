@@ -15,8 +15,8 @@ const InvoicePreview = ({ invoice }) => {
           {invoice.items.map((item, index) => (
             <ListItem key={index}>
               <Typography color="textSecondary">
-                {item.quantity} x {item.reference} (Gencode: {item.gencode}) -{' '}
-                {item.prixUnitaire.toFixed(2)} € chacun, Total:{' '}
+                {item.quantity} x {item.reference} ({item.gencode}) - Prix
+                unitaire {item.prixUnitaire.toFixed(2)} € Total:{' '}
                 {item.prixTotal.toFixed(2)} €
               </Typography>
             </ListItem>
