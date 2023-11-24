@@ -13,17 +13,24 @@ import {
   CircularProgress,
   Alert,
 } from '@mui/material'
-import SearchIcon from '@mui/icons-material/Search'
+import DocumentScannerIcon from '@mui/icons-material/DocumentScanner'
 import useGlobalScannedDataHandler from '../hooks/useGlobalScannedDataHandler'
 import useWebSocket from '../hooks/useWebSocket'
 import useProducts from '../hooks/useProducts'
 import useSearch from '../hooks/useSearch'
+const isAndroidWebView = navigator.userAgent.toLowerCase().includes('wv')
 
 const ProductSearch = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [isScannerMode, setIsScannerMode] = useState(true)
   const { products, loading, error } = useProducts()
   const filteredProducts = useSearch(products, searchTerm)
+
+  const handleScanClick = () => {
+    if (window.Android) {
+      window.Android.performScan() // Votre méthode Java exposée via `addJavascriptInterface`
+    }
+  }
 
   // Définir les fonctions de rappel pour les événements WebSocket
   const handleWsMessage = useCallback((event) => {
@@ -84,9 +91,12 @@ const ProductSearch = () => {
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton>
-                <SearchIcon />
-              </IconButton>
+              {isAndroidWebView && (
+                <IconButton onClick={handleScanClick}>
+                  <DocumentScannerIcon />
+                </IconButton>
+              )}
+              {/* Autres icônes ou éléments ici */}
             </InputAdornment>
           ),
         }}

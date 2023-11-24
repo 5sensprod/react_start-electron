@@ -1,14 +1,44 @@
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useState } from 'react'
 
 const useWebSocket = (url, onMessage, onError, onOpen, onClose) => {
   const ws = useRef(null)
+  const [shouldConnect, setShouldConnect] = useState(false)
+  const [attempts, setAttempts] = useState(0)
+  const timeoutRef = useRef(null)
+
+  const clearReconnectionTimeout = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+  }, [])
+
+  const checkServerStatus = useCallback(async () => {
+    clearReconnectionTimeout()
+    try {
+      const response = await fetch(`${url.replace('ws', 'http')}/status`)
+      const data = await response.json()
+      if (data.status === 'ok') {
+        setShouldConnect(true)
+        setAttempts(0) // Reset attempts after successful connection
+      } else {
+        // Increment attempts and use exponential backoff for reconnection attempts
+        setAttempts((prevAttempts) => prevAttempts + 1)
+        const delay = Math.min(1000 * 2 ** attempts, 30000) // Cap the delay to 30 seconds
+        timeoutRef.current = setTimeout(checkServerStatus, delay)
+      }
+    } catch (error) {
+      console.error('Error checking server status:', error)
+      setAttempts((prevAttempts) => prevAttempts + 1)
+      const delay = Math.min(1000 * 2 ** attempts, 30000) // Cap the delay to 30 seconds
+      timeoutRef.current = setTimeout(checkServerStatus, delay)
+    }
+  }, [url, attempts, clearReconnectionTimeout])
 
   useEffect(() => {
-    console.log('Attempting to connect to WebSocket', url)
+    if (shouldConnect) {
+      console.log('Attempting to connect to WebSocket', url)
 
-    // Vérifiez si le WebSocket est déjà ouvert
-    if (!ws.current || ws.current.readyState === WebSocket.CLOSED) {
-      console.log('Creating new WebSocket instance')
       ws.current = new WebSocket(url)
 
       ws.current.onmessage = (event) => {
@@ -26,29 +56,46 @@ const useWebSocket = (url, onMessage, onError, onOpen, onClose) => {
       ws.current.onclose = (event) => {
         console.log('WebSocket connection closed:', event)
         onClose(event)
+        setShouldConnect(false)
+        checkServerStatus()
       }
     }
 
-    // La fonction de nettoyage
     return () => {
       if (ws.current) {
         console.log('Closing WebSocket connection')
         ws.current.close()
       }
+      clearReconnectionTimeout()
     }
-  }, [url, onMessage, onError, onOpen, onClose])
+  }, [
+    url,
+    onMessage,
+    onError,
+    onOpen,
+    onClose,
+    shouldConnect,
+    checkServerStatus,
+    clearReconnectionTimeout,
+  ])
 
-  // Enveloppez sendMessage dans useCallback pour éviter une nouvelle création à chaque re-rendu
+  // Initialize the connection check after a delay to give the server time to start
+  useEffect(() => {
+    const initialDelay = 3000 // Start with a 3-second delay to check server status
+    timeoutRef.current = setTimeout(checkServerStatus, initialDelay)
+    return clearReconnectionTimeout
+  }, [checkServerStatus, clearReconnectionTimeout])
+
   const sendMessage = useCallback((message) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       console.log('Sending message through WebSocket:', message)
       ws.current.send(message)
     } else {
-      console.log('Cannot send message, WebSocket is not open')
+      console.error('Cannot send message, WebSocket is not open')
     }
   }, [])
 
-  return sendMessage
+  return { sendMessage, checkServerStatus }
 }
 
 export default useWebSocket

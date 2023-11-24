@@ -51,14 +51,19 @@ app.get('/testcamera', (req, res) => {
 
 const server = http.createServer(app)
 
+let isWebSocketServerReady = false
 const wss = new WebSocket.Server({ server })
+
+wss.on('listening', () => {
+  console.log('WebSocket Server is listening, ready to accept connections')
+  isWebSocketServerReady = true
+})
 
 wss.on('connection', function connection(ws) {
   console.log('Client connected')
 
   ws.on('message', function incoming(message) {
     console.log('received: %s', message)
-
     // Retransmettre le message à tous les clients connectés
     wss.clients.forEach(function each(client) {
       if (client.readyState === WebSocket.OPEN) {
@@ -66,6 +71,31 @@ wss.on('connection', function connection(ws) {
       }
     })
   })
+
+  ws.on('close', function close() {
+    console.log('Client disconnected')
+    // Vérifiez si tous les clients sont déconnectés et mettez à jour le statut en conséquence
+    const allClientsDisconnected = [...wss.clients].every(
+      (client) => client.readyState === WebSocket.CLOSED,
+    )
+    if (allClientsDisconnected) {
+      isWebSocketServerReady = false
+    }
+  })
+})
+
+// Notez que si le serveur WebSocket devait être fermé correctement, vous devriez également gérer cet événement.
+wss.on('close', () => {
+  console.log('WebSocket Server has closed')
+  isWebSocketServerReady = false
+})
+
+app.get('/status', (req, res) => {
+  if (isWebSocketServerReady) {
+    res.json({ status: 'ok' })
+  } else {
+    res.status(503).json({ status: 'not ready' })
+  }
 })
 
 module.exports = server
