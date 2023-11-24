@@ -13,8 +13,6 @@ const userDataPath = (electron.app || electron.remote.app).getPath('userData')
 const cataloguePath = path.join(userDataPath, 'catalogue')
 
 app.use('/catalogue', express.static(cataloguePath))
-// app.use(express.static(path.join(__dirname, '..', 'public')))
-
 app.use(express.static(path.join(__dirname, '..', 'build')))
 
 app.use(
@@ -31,24 +29,6 @@ app.use(bodyParser.json())
 
 app.use('/api/products', productRoutes)
 
-app.get('/test', (req, res) => {
-  res.send('Le serveur fonctionne correctement.')
-})
-
-app.post('/scan', (req, res) => {
-  const scannedData = req.body.data
-  console.log('Données scannées reçues:', scannedData)
-  res.status(200).json({ message: 'Données scannées reçues avec succès.' })
-})
-
-app.get('/scan', (req, res) => {
-  res.send('Cette route attend une requête POST avec les données scannées.')
-})
-
-app.get('/testcamera', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'public', 'camera.html'))
-})
-
 const server = http.createServer(app)
 
 let isWebSocketServerReady = false
@@ -64,7 +44,6 @@ wss.on('connection', function connection(ws) {
 
   ws.on('message', function incoming(message) {
     console.log('received: %s', message)
-    // Retransmettre le message à tous les clients connectés
     wss.clients.forEach(function each(client) {
       if (client.readyState === WebSocket.OPEN) {
         client.send(message)
@@ -74,7 +53,6 @@ wss.on('connection', function connection(ws) {
 
   ws.on('close', function close() {
     console.log('Client disconnected')
-    // Vérifiez si tous les clients sont déconnectés et mettez à jour le statut en conséquence
     const allClientsDisconnected = [...wss.clients].every(
       (client) => client.readyState === WebSocket.CLOSED,
     )
@@ -84,7 +62,6 @@ wss.on('connection', function connection(ws) {
   })
 })
 
-// Notez que si le serveur WebSocket devait être fermé correctement, vous devriez également gérer cet événement.
 wss.on('close', () => {
   console.log('WebSocket Server has closed')
   isWebSocketServerReady = false
