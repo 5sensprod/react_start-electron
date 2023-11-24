@@ -4,16 +4,12 @@ const bodyParser = require('body-parser')
 const path = require('path')
 const productRoutes = require('./routes/productRoutes')
 const electron = require('electron')
-
 const WebSocket = require('ws')
 const http = require('http')
-
-const app = express()
 const userDataPath = (electron.app || electron.remote.app).getPath('userData')
 const cataloguePath = path.join(userDataPath, 'catalogue')
-
-app.use('/catalogue', express.static(cataloguePath))
-app.use(express.static(path.join(__dirname, '..', 'build')))
+const invoiceRoutes = require('./routes/invoices')
+const app = express()
 
 app.use(
   cors({
@@ -22,13 +18,17 @@ app.use(
       'http://192.168.1',
       'http://localhost:3000',
       'http://localhost:5000',
+      'http://192.168.1.10:3000',
     ],
   }),
 )
 app.use(bodyParser.json())
 
+app.use('/api', invoiceRoutes)
 app.use('/api/products', productRoutes)
+app.use('/catalogue', express.static(cataloguePath))
 
+app.use(express.static(path.join(__dirname, '..', 'build')))
 const server = http.createServer(app)
 
 let isWebSocketServerReady = false

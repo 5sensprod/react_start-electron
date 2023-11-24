@@ -11,10 +11,10 @@ import AddIcon from '@mui/icons-material/Add'
 
 const serverBaseUrl = 'http://localhost:5000'
 
-const ProductItem = ({ product }) => {
+const ProductItem = ({ product, addToCart }) => {
   // La logique pour ajouter au panier peut être ajoutée ici ou passée en prop.
-  const addToCart = () => {
-    // Implementer l'ajout au panier
+  const handleAddToCartClick = () => {
+    addToCart(product)
   }
 
   const imageUrl =
@@ -83,7 +83,7 @@ const ProductItem = ({ product }) => {
           }}
         >
           <Button
-            onClick={addToCart}
+            onClick={handleAddToCartClick}
             style={{
               width: '40px',
               height: '40px',

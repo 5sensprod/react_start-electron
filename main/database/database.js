@@ -31,4 +31,9 @@ db.categories = new Datastore({
   autoload: true,
 })
 
+db.pendingInvoices = new Datastore({
+  filename: path.join(userDataPath, 'pendingInvoices.db'),
+  autoload: true,
+})
+
 module.exports = db

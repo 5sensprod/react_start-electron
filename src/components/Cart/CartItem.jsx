@@ -11,23 +11,23 @@ import DeleteIcon from '@mui/icons-material/Delete'
 
 const CartItem = ({ item, updateQuantity, removeItem }) => {
   const handleQuantityChange = (event) => {
-    updateQuantity(item.id, parseInt(event.target.value, 10))
+    updateQuantity(item._id, parseInt(event.target.value, 10))
   }
 
   const handleRemoveClick = () => {
-    removeItem(item.id)
+    removeItem(item._id)
   }
 
   return (
     <Card variant="outlined">
       <CardContent>
-        <Typography variant="h6">{item.name}</Typography>
-        <Typography color="textSecondary">{item.price} €</Typography>
+        <Typography variant="h6">{item.reference}</Typography>
+        <Typography color="textSecondary">{item.prixVente} €</Typography>
         <TextField
           type="number"
           value={item.quantity}
           onChange={handleQuantityChange}
-          inputProps={{ min: 1 }}
+          inputProps={{ min: 0 }}
           size="small"
         />
         <IconButton onClick={handleRemoveClick}>

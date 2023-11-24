@@ -8,7 +8,7 @@ const Cart = ({ cartItems, updateQuantity, removeItem, checkout }) => {
 
   useEffect(() => {
     const newTotal = cartItems.reduce(
-      (sum, item) => sum + item.quantity * item.price,
+      (sum, item) => sum + item.quantity * item.prixVente,
       0,
     )
     setTotal(newTotal)
@@ -16,10 +16,10 @@ const Cart = ({ cartItems, updateQuantity, removeItem, checkout }) => {
 
   return (
     <Box>
-      <Typography variant="h4">Panier</Typography>
+      {/* <Typography variant="h4">Panier</Typography> */}
       {cartItems.map((item) => (
         <CartItem
-          key={item.id}
+          key={item._id}
           item={item}
           updateQuantity={updateQuantity}
           removeItem={removeItem}

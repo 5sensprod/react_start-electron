@@ -1,4 +1,3 @@
-// Vous utilisez votre instance Axios configurée pour faire des appels API.
 import axios from './axiosConfig'
 
 export const getProducts = async () => {

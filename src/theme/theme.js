@@ -49,18 +49,18 @@ const theme = createTheme({
     MuiCardContent: {
       styleOverrides: {
         root: {
-          padding: '0px',
-          margin: '0px',
-          paddingBottom: '1px',
+          // padding: '0px',
+          // margin: '0px',
+          // paddingBottom: '1px',
         },
       },
     },
     MuiCardContentLastChild: {
       styleOverrides: {
         root: {
-          padding: '0px',
-          margin: '0px',
-          paddingBottom: '1px',
+          // padding: '0px',
+          // margin: '0px',
+          // paddingBottom: '1px',
         },
       },
     },

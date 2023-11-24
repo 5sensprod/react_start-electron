@@ -5,7 +5,7 @@ import ProductItem from './ProductItem'
 import useProducts from '../../hooks/useProducts'
 import useSearch from '../../hooks/useSearch'
 
-const ProductList = ({ searchTerm }) => {
+const ProductList = ({ searchTerm, addToCart }) => {
   const { products, loading, error } = useProducts()
   const filteredProducts = useSearch(products, searchTerm) // Résultat de useSearch
 
@@ -18,7 +18,11 @@ const ProductList = ({ searchTerm }) => {
         (
           product, // Utilisez filteredProducts ici
         ) => (
-          <ProductItem key={product._id} product={product} />
+          <ProductItem
+            key={product._id}
+            product={product}
+            addToCart={addToCart}
+          />
         ),
       )}
     </div>
