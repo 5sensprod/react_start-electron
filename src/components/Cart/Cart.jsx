@@ -13,10 +13,8 @@ const Cart = () => {
     checkout,
     holdInvoice,
     resumeInvoice,
-    deleteInvoice,
   } = useContext(CartContext)
 
-  // Définissez le taux de taxe ici ou obtenez-le de votre configuration / état global
   const taxRate = 0.2 // 20% par exemple
 
   return (
@@ -67,30 +65,10 @@ const Cart = () => {
         <Grid item xs={12}>
           <Typography variant="h6">Factures en attente:</Typography>
           {onHoldInvoices.map((invoice, index) => (
-            <Box
-              key={index}
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                marginBottom: '8px',
-              }}
-            >
-              <Typography sx={{ flexGrow: 1 }}>
-                Facture en attente #{index + 1}
-              </Typography>
-              <Button
-                onClick={() => resumeInvoice(index)}
-                variant="contained"
-                sx={{ marginRight: '8px' }}
-              >
+            <Box key={index} sx={{ marginBottom: '8px' }}>
+              <Typography>Facture en attente #{index + 1}</Typography>
+              <Button onClick={() => resumeInvoice(index)} variant="contained">
                 Reprendre
-              </Button>
-              <Button
-                onClick={() => deleteInvoice(index)}
-                variant="contained"
-                color="secondary"
-              >
-                Supprimer
               </Button>
             </Box>
           ))}

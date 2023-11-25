@@ -16,27 +16,8 @@ export const CartProvider = ({ children }) => {
 
   // Reprendre une facture en attente
   const resumeInvoice = (index) => {
-    // Si le panier actuel contient des éléments, demandez confirmation avant de le remplacer
-    if (
-      cartItems.length > 0 &&
-      !window.confirm(
-        'Cette facture en attente va être chargée et le panier actuel sera vidé. Êtes-vous sûr?',
-      )
-    ) {
-      return
-    }
-
-    // Chargez la facture en attente sélectionnée
     setCartItems(onHoldInvoices[index])
-
-    // Ne supprimez pas la facture de la liste des factures en attente
-    // car elle doit rester persistante jusqu'à être payée ou supprimée explicitement
-  }
-  // Supprimer une facture en attente
-  const deleteInvoice = (index) => {
-    setOnHoldInvoices((currentInvoices) =>
-      currentInvoices.filter((_, i) => i !== index),
-    )
+    setOnHoldInvoices(onHoldInvoices.filter((_, i) => i !== index))
   }
 
   // Ajouter un produit au panier
@@ -75,9 +56,7 @@ export const CartProvider = ({ children }) => {
   }
 
   const checkout = () => {
-    // Implémentez ici la logique de paiement ou de commande
     console.log('Procéder au paiement avec les articles du panier:', cartItems)
-    // Après le paiement, vous pouvez vider le panier
     setCartItems([])
   }
 
@@ -92,7 +71,6 @@ export const CartProvider = ({ children }) => {
         checkout,
         holdInvoice,
         resumeInvoice,
-        deleteInvoice,
       }}
     >
       {children}
