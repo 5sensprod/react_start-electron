@@ -1,7 +1,14 @@
 // src/components/OrderSummary/OrderSummary.js
 import React from 'react'
-import { Card, CardContent, Typography, Divider } from '@mui/material'
-
+import {
+  Card,
+  CardContent,
+  Typography,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+} from '@mui/material'
 const OrderSummary = ({ cartItems, taxRate }) => {
   // Calculer le total TTC
   const totalTTC = cartItems.reduce(
@@ -22,7 +29,18 @@ const OrderSummary = ({ cartItems, taxRate }) => {
   return (
     <Card raised>
       <CardContent>
-        <Typography variant="h6">Résumé de la commande</Typography>
+        <Typography variant="h6">Ticket</Typography>
+        <Divider />
+        <List>
+          {cartItems.map((item) => (
+            <ListItem key={item._id}>
+              <ListItemText
+                primary={item.reference}
+                secondary={`Quantité: ${item.quantity}`}
+              />
+            </ListItem>
+          ))}
+        </List>
         <Divider />
         <Typography>Sous-total HT: {totalHT.toFixed(2)} €</Typography>
         <Typography>

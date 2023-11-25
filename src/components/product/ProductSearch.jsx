@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useContext } from 'react'
+import { CartContext } from '../../contexts/CartContext'
 import {
   Table,
   TableBody,
@@ -24,12 +25,16 @@ const ProductSearch = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [isScannerMode, setIsScannerMode] = useState(true)
   const { products, loading, error } = useProducts()
+  const { addToCart } = useContext(CartContext)
   const filteredProducts = useSearch(products, searchTerm)
 
   const handleScanClick = () => {
     if (window.Android) {
       window.Android.performScan() // Votre méthode Java exposée via `addJavascriptInterface`
     }
+  }
+  const handleAddToCart = (product) => {
+    addToCart(product)
   }
 
   // Définir les fonctions de rappel pour les événements WebSocket
@@ -113,11 +118,17 @@ const ProductSearch = () => {
           </TableHead>
           <TableBody>
             {filteredProducts.map((product) => (
-              <TableRow key={product._id}>
+              <TableRow
+                key={product._id}
+                hover // Optionnel: ajoute un effet visuel au survol de la ligne
+                style={{ cursor: 'pointer' }} // Rend la ligne visuellement cliquable
+                onClick={() => handleAddToCart(product)} // Appelle handleAddToCart lorsque la ligne est cliquée
+              >
                 <TableCell>{product.reference}</TableCell>
                 <TableCell>{product.marque}</TableCell>
                 <TableCell>{product.gencode}</TableCell>
-                <TableCell>{product.prixVente}</TableCell>
+                <TableCell>{product.prixVente} €</TableCell>
+                {/* Vous pouvez ajouter un bouton ici si vous voulez une icône d'ajout au panier */}
               </TableRow>
             ))}
           </TableBody>

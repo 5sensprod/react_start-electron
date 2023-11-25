@@ -1,35 +1,81 @@
-// src/components/Cart/Cart.js
-import React, { useState, useEffect } from 'react'
+import React, { useContext } from 'react'
+import { CartContext } from '../../contexts/CartContext'
 import CartItem from './CartItem'
-import { Box, Typography, Button } from '@mui/material'
+import OrderSummary from '../OrderSummary/OrderSummary' // Assurez-vous que le chemin d'accès est correct
+import { Box, Typography, Button, Grid } from '@mui/material'
 
-const Cart = ({ cartItems, updateQuantity, removeItem, checkout }) => {
-  const [total, setTotal] = useState(0)
+const Cart = () => {
+  const {
+    cartItems,
+    onHoldInvoices,
+    updateQuantity,
+    removeItem,
+    checkout,
+    holdInvoice,
+    resumeInvoice,
+  } = useContext(CartContext)
 
-  useEffect(() => {
-    const newTotal = cartItems.reduce(
-      (sum, item) => sum + item.quantity * item.prixVente,
-      0,
-    )
-    setTotal(newTotal)
-  }, [cartItems])
+  // Définissez le taux de taxe ici ou obtenez-le de votre configuration / état global
+  const taxRate = 0.2 // 20% par exemple
 
   return (
-    <Box>
-      {/* <Typography variant="h4">Panier</Typography> */}
-      {cartItems.map((item) => (
-        <CartItem
-          key={item._id}
-          item={item}
-          updateQuantity={updateQuantity}
-          removeItem={removeItem}
-        />
-      ))}
-      <Typography variant="h5">Total: {total.toFixed(2)} €</Typography>
-      <Button onClick={checkout} variant="contained" color="primary">
-        Payer
-      </Button>
-    </Box>
+    <Grid container spacing={2}>
+      <Grid item xs={12} md={8}>
+        <Box>
+          {cartItems.length > 0 ? (
+            <>
+              {cartItems.map((item) => (
+                <CartItem
+                  key={item._id}
+                  item={item}
+                  updateQuantity={updateQuantity}
+                  removeItem={removeItem}
+                />
+              ))}
+              <Typography variant="h5">
+                Total: {/* Calculer le total ici */} €
+              </Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  marginTop: '8px',
+                }}
+              >
+                <Button
+                  onClick={holdInvoice}
+                  variant="contained"
+                  sx={{ marginRight: '8px' }}
+                >
+                  Mettre en attente
+                </Button>
+                <Button onClick={checkout} variant="contained" color="primary">
+                  Payer
+                </Button>
+              </Box>
+            </>
+          ) : (
+            <Typography variant="h6">Votre panier est vide.</Typography>
+          )}
+        </Box>
+      </Grid>
+      <Grid item xs={12} md={4}>
+        <OrderSummary cartItems={cartItems} taxRate={taxRate} />
+      </Grid>
+      {onHoldInvoices.length > 0 && (
+        <Grid item xs={12}>
+          <Typography variant="h6">Factures en attente:</Typography>
+          {onHoldInvoices.map((invoice, index) => (
+            <Box key={index} sx={{ marginBottom: '8px' }}>
+              <Typography>Facture en attente #{index + 1}</Typography>
+              <Button onClick={() => resumeInvoice(index)} variant="contained">
+                Reprendre
+              </Button>
+            </Box>
+          ))}
+        </Grid>
+      )}
+    </Grid>
   )
 }
 
