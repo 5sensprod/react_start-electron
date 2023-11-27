@@ -62,15 +62,9 @@ const OrderSummary = ({ cartItems, taxRate }) => {
                   primary={item.reference}
                   secondary={
                     <>
-                      <Typography display="block">
-                        Quantité {item.quantity}
-                      </Typography>
-                      <Typography display="block">
-                        Prix unitaire {formatPrice(item.prixVente)}
-                      </Typography>
-                      <Typography>
-                        {label && <span>{` ${label} ${value}%`}</span>}
-                      </Typography>
+                      Quantité {item.quantity}
+                      Prix unitaire {formatPrice(item.prixVente)}
+                      {label && <span>{` ${label} ${value}%`}</span>}
                     </>
                   }
                 />

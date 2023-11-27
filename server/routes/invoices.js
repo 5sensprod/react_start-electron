@@ -3,8 +3,8 @@ const router = express.Router()
 const db = require('../../main/database/database')
 
 // Obtenir toutes les factures en attente
-router.get('/pending-invoices', (req, res) => {
-  db.pendingInvoices.find({}, (err, invoices) => {
+router.get('/invoices', (req, res) => {
+  db.invoices.find({}, (err, invoices) => {
     if (err) {
       res.status(500).send('Erreur lors de la récupération des factures.')
     } else {
@@ -14,18 +14,38 @@ router.get('/pending-invoices', (req, res) => {
 })
 
 // Ajouter une nouvelle facture en attente
-router.post('/pending-invoices', (req, res) => {
-  let newInvoice = req.body
+// Fonction pour obtenir la date et l'heure actuelle sous forme de chaîne
+const getDateTimeString = () => {
+  const now = new Date()
+  return `${now.getFullYear()}${String(now.getMonth() + 1).padStart(
+    2,
+    '0',
+  )}${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(
+    2,
+    '0',
+  )}${String(now.getMinutes()).padStart(2, '0')}${String(
+    now.getSeconds(),
+  ).padStart(2, '0')}`
+}
 
-  // Assigner un nouvel ID si l'ID n'est pas fourni
-  if (!newInvoice.id) {
-    newInvoice.id =
-      Date.now().toString(36) + Math.random().toString(36).substr(2)
+// Ajouter une nouvelle facture
+router.post('/invoices', (req, res) => {
+  // Obtenir la chaîne de date et d'heure actuelle
+  const dateTimeString = getDateTimeString()
+
+  // Générer le numéro de facture avec un numéro séquentiel
+  // Cette partie pourrait être améliorée en cherchant dans la base de données pour le dernier numéro séquentiel utilisé aujourd'hui
+  const invoiceNumber = `${dateTimeString}`
+
+  let newInvoice = {
+    ...req.body,
+    invoiceNumber, // Ajoutez le numéro de facture généré ici
+    date: new Date().toISOString(),
   }
 
-  db.pendingInvoices.insert(newInvoice, (err, invoice) => {
+  // Insérer la nouvelle facture dans la base de données
+  db.invoices.insert(newInvoice, (err, invoice) => {
     if (err) {
-      console.error("Erreur lors de l'insertion de la facture :", err)
       res.status(500).send("Erreur lors de l'ajout de la facture.")
     } else {
       res.status(201).send(invoice)
@@ -34,9 +54,9 @@ router.post('/pending-invoices', (req, res) => {
 })
 
 // Mettre à jour une facture en attente
-router.put('/pending-invoices/:id', (req, res) => {
+router.put('/invoices/:id', (req, res) => {
   const { id } = req.params
-  db.pendingInvoices.update(
+  db.invoices.update(
     { _id: id },
     { $set: req.body },
     {},
@@ -51,9 +71,9 @@ router.put('/pending-invoices/:id', (req, res) => {
 })
 
 // Supprimer une facture en attente
-router.delete('/pending-invoices/:id', (req, res) => {
+router.delete('/invoices/:id', (req, res) => {
   const { id } = req.params
-  db.pendingInvoices.remove({ _id: id }, {}, (err, numRemoved) => {
+  db.invoices.remove({ _id: id }, {}, (err, numRemoved) => {
     if (err) {
       res.status(500).send('Erreur lors de la suppression de la facture.')
     } else {

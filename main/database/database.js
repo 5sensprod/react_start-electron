@@ -31,8 +31,8 @@ db.categories = new Datastore({
   autoload: true,
 })
 
-db.pendingInvoices = new Datastore({
-  filename: path.join(userDataPath, 'pendingInvoices.db'),
+db.invoices = new Datastore({
+  filename: path.join(userDataPath, 'invoices.db'),
   autoload: true,
 })
 

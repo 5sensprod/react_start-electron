@@ -83,20 +83,21 @@ export const CartProvider = ({ children }) => {
     )
   }
 
-  const checkout = () => {
-    console.log('Procéder au paiement avec les articles du panier:', cartItems)
-    setCartItems([])
-  }
+  // const checkout = () => {
+  //   console.log('Procéder au paiement avec les articles du panier:', cartItems)
+  //   setCartItems([])
+  // }
 
   return (
     <CartContext.Provider
       value={{
         cartItems,
+        setCartItems,
         onHoldInvoices,
         addToCart,
         updateQuantity,
         removeItem,
-        checkout,
+        // checkout,
         holdInvoice,
         resumeInvoice,
         deleteInvoice,
