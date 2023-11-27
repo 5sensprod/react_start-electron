@@ -1,7 +1,7 @@
-import React, { useContext, useState, useRef } from 'react'
+import React, { useContext, useState, useRef, useEffect } from 'react'
 import { CartContext } from '../../contexts/CartContext'
 import CartItem from './CartItem'
-import OrderSummary from '../OrderSummary/OrderSummary' // Assurez-vous que le chemin d'accès est correct
+import OrderSummary from '../OrderSummary/OrderSummary'
 import {
   Box,
   Typography,
@@ -17,6 +17,7 @@ import {
 } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { addInvoice } from '../../api/invoiceService'
+import { getCompanyInfo } from '../../api/userService'
 
 const Cart = () => {
   const {
@@ -142,6 +143,20 @@ const Cart = () => {
   }
 
   const InvoicePrint = React.forwardRef(({ invoiceData }, ref) => {
+    const [companyInfo, setCompanyInfo] = useState(null)
+
+    useEffect(() => {
+      const fetchCompanyInfo = async () => {
+        try {
+          const info = await getCompanyInfo()
+          setCompanyInfo(info)
+        } catch (error) {
+          console.error('Failed to fetch company info:', error)
+        }
+      }
+
+      fetchCompanyInfo()
+    }, [])
     // Formatage de la date pour l'affichage
     const formattedDate = new Date(invoiceData.date).toLocaleDateString(
       'fr-FR',
@@ -157,8 +172,18 @@ const Cart = () => {
     return (
       <div ref={ref}>
         {/* Entête de la facture */}
+        {companyInfo && (
+          <>
+            <Typography variant="h5">{companyInfo.name}</Typography>
+            <Typography variant="body1">{companyInfo.address}</Typography>
+            <Typography variant="body1">{companyInfo.city}</Typography>
+            <Typography variant="body1">Tél: {companyInfo.phone}</Typography>
+            <Typography variant="body1">Email: {companyInfo.email}</Typography>
+            <Typography variant="body1">TVA: {companyInfo.taxId}</Typography>
+          </>
+        )}
         <Typography variant="h6">
-          <Typography variant="h6">
+          <Typography variant="body1">
             Facture #{invoiceData.invoiceNumber}
           </Typography>
         </Typography>

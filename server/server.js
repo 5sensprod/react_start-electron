@@ -3,6 +3,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const path = require('path')
 const productRoutes = require('./routes/productRoutes')
+const userRoutes = require('./routes/userRoutes')
 const electron = require('electron')
 const WebSocket = require('ws')
 const http = require('http')
@@ -22,8 +23,9 @@ app.use(
     ],
   }),
 )
-app.use(bodyParser.json())
 
+app.use(bodyParser.json())
+app.use('/api/users', userRoutes)
 app.use('/api', invoiceRoutes)
 app.use('/api/products', productRoutes)
 app.use('/catalogue', express.static(cataloguePath))
