@@ -10,7 +10,7 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <CartProvider>
-        <Box sx={{ marginTop: '16px' }}>
+        <Box sx={{ margin: '16px' }}>
           <Grid container spacing={4}>
             <Grid item xs={12} md={6}>
               <ProductSearch />

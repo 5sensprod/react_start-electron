@@ -23,6 +23,10 @@ const OrderSummary = ({ cartItems, taxRate }) => {
     return total + item.quantity * prixHT
   }, 0)
 
+  const formatPrice = (price) => {
+    return price.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
+  }
+
   // Calculer le montant total de la taxe
   const totalTaxes = totalTTC - totalHT
 
@@ -42,12 +46,12 @@ const OrderSummary = ({ cartItems, taxRate }) => {
           ))}
         </List>
         <Divider />
-        <Typography>Sous-total HT: {totalHT.toFixed(2)} €</Typography>
+        <Typography>Sous-total HT {formatPrice(totalHT)}</Typography>
         <Typography>
-          Taxe ({(taxRate * 100).toFixed(0)}%) : {totalTaxes.toFixed(2)} €
+          TVA ({(taxRate * 100).toFixed(0)}%) : {formatPrice(totalTaxes)}
         </Typography>
         <Divider />
-        <Typography variant="h5">Total TTC: {totalTTC.toFixed(2)} €</Typography>
+        <Typography variant="h6">Total TTC {formatPrice(totalTTC)}</Typography>
       </CardContent>
     </Card>
   )
