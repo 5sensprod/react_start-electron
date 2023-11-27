@@ -1,4 +1,3 @@
-// src/components/OrderSummary/OrderSummary.js
 import React from 'react'
 import {
   Card,
@@ -9,25 +8,44 @@ import {
   ListItem,
   ListItemText,
 } from '@mui/material'
+
 const OrderSummary = ({ cartItems, taxRate }) => {
-  // Calculer le total TTC
+  // Utilisez une fonction pour déterminer quel prix utiliser et calculer la remise/majoration
+  const getPriceDetails = (item) => {
+    const priceToUse = item.prixModifie ?? item.prixVente
+    let label = ''
+    let value = 0
+
+    if (item.prixModifie) {
+      const difference = item.prixModifie - item.prixVente
+      value = Math.abs((difference / item.prixVente) * 100)
+      if (difference < 0) {
+        label = 'Remise'
+      } else if (difference > 0) {
+        label = 'Majoration'
+      }
+    }
+
+    return {
+      priceToUse,
+      label,
+      value: value.toFixed(2), // Format to 2 decimal places
+    }
+  }
+  // Calculer le total TTC et HT en utilisant getPriceDetails
   const totalTTC = cartItems.reduce(
-    (total, item) => total + item.quantity * item.prixVente,
+    (total, item) => total + item.quantity * getPriceDetails(item).priceToUse,
+    0,
+  )
+  const totalHT = cartItems.reduce(
+    (total, item) =>
+      total +
+      item.quantity * (getPriceDetails(item).priceToUse / (1 + taxRate)),
     0,
   )
 
-  // Calculer le total HT
-  const totalHT = cartItems.reduce((total, item) => {
-    // Retirer la taxe de chaque prix de vente pour obtenir le prix HT
-    const prixHT = item.prixVente / (1 + taxRate)
-    return total + item.quantity * prixHT
-  }, 0)
-
-  const formatPrice = (price) => {
-    return price.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
-  }
-
-  // Calculer le montant total de la taxe
+  const formatPrice = (price) =>
+    price.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
   const totalTaxes = totalTTC - totalHT
 
   return (
@@ -36,14 +54,29 @@ const OrderSummary = ({ cartItems, taxRate }) => {
         <Typography variant="h6">Ticket</Typography>
         <Divider />
         <List>
-          {cartItems.map((item) => (
-            <ListItem key={item._id}>
-              <ListItemText
-                primary={item.reference}
-                secondary={`Quantité: ${item.quantity}`}
-              />
-            </ListItem>
-          ))}
+          {cartItems.map((item) => {
+            const { label, value } = getPriceDetails(item)
+            return (
+              <ListItem key={item._id}>
+                <ListItemText
+                  primary={item.reference}
+                  secondary={
+                    <>
+                      <Typography display="block">
+                        Quantité {item.quantity}
+                      </Typography>
+                      <Typography display="block">
+                        Prix unitaire {formatPrice(item.prixVente)}
+                      </Typography>
+                      <Typography>
+                        {label && <span>{` ${label} ${value}%`}</span>}
+                      </Typography>
+                    </>
+                  }
+                />
+              </ListItem>
+            )
+          })}
         </List>
         <Divider />
         <Typography>Sous-total HT {formatPrice(totalHT)}</Typography>

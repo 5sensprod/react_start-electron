@@ -29,14 +29,20 @@ const Cart = () => {
   }
 
   const calculateTotal = (items) => {
-    return items.reduce((acc, item) => acc + item.quantity * item.prixVente, 0)
+    return items.reduce((acc, item) => {
+      // Utilisez prixModifie s'il est défini, sinon utilisez prixVente
+      const itemPrice =
+        item.prixModifie !== undefined ? item.prixModifie : item.prixVente
+      return acc + item.quantity * itemPrice
+    }, 0)
   }
 
   const calculateInvoiceTotal = (invoiceItems) => {
-    return invoiceItems.reduce(
-      (acc, item) => acc + item.quantity * item.prixVente,
-      0,
-    )
+    return invoiceItems.reduce((total, item) => {
+      // Utilise le prix modifié s'il existe, sinon utilise le prix original
+      const priceToUse = item.prixModifie ?? item.prixVente
+      return total + item.quantity * priceToUse
+    }, 0)
   }
 
   return (

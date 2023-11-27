@@ -11,8 +11,11 @@ export const CartProvider = ({ children }) => {
   // Mettre la facture en attente
   const holdInvoice = () => {
     const newInvoice = {
-      id: Date.now(), // Utiliser Date.now() génère un identifiant basé sur le temps actuel
-      items: cartItems, // Les éléments actuels du panier
+      id: Date.now(),
+      items: cartItems.map((item) => ({
+        ...item,
+        prixModifie: item.prixModifie, // Conserver le prix modifié
+      })),
     }
     setOnHoldInvoices((prevInvoices) => [...prevInvoices, newInvoice])
     setCartItems([]) // Vider le panier actuel
@@ -20,9 +23,14 @@ export const CartProvider = ({ children }) => {
 
   // Reprendre une facture en attente
   const resumeInvoice = (index) => {
-    const invoiceItems = onHoldInvoices[index].items
+    const invoiceItems = onHoldInvoices[index].items.map((item) => ({
+      ...item,
+      // Restaurez le prixModifie et le prixVente
+      prixVente: item.prixVente,
+      prixModifie: item.prixModifie,
+    }))
     setCartItems(invoiceItems)
-    // Notez que nous ne supprimons pas la facture de onHoldInvoices ici
+    // Optionnellement, vous pouvez décider de conserver ou non la facture dans onHoldInvoices
   }
 
   const deleteInvoice = (index) => {
@@ -63,7 +71,7 @@ export const CartProvider = ({ children }) => {
   const updatePrice = (productId, newPrice) => {
     setCartItems((currentItems) =>
       currentItems.map((item) =>
-        item._id === productId ? { ...item, prixVente: newPrice } : item,
+        item._id === productId ? { ...item, prixModifie: newPrice } : item,
       ),
     )
   }

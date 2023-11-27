@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Box,
   Card,
@@ -13,12 +13,26 @@ import ReplayIcon from '@mui/icons-material/Replay'
 
 const CartItem = ({ item, updateQuantity, updatePrice, removeItem }) => {
   const [editPrice, setEditPrice] = useState(
-    item.prixVente.toLocaleString('fr-FR'),
+    item.prixModifie
+      ? item.prixModifie.toLocaleString('fr-FR')
+      : item.prixVente.toLocaleString('fr-FR'),
   )
 
-  const [isPriceEdited, setIsPriceEdited] = useState(false)
+  const [isPriceEdited, setIsPriceEdited] = useState(
+    item.prixModifie !== undefined && item.prixModifie !== item.prixVente,
+  )
 
   const [originalPrice] = useState(item.prixVente)
+
+  useEffect(() => {
+    setEditPrice(
+      item.prixModifie?.toLocaleString('fr-FR') ||
+        item.prixVente.toLocaleString('fr-FR'),
+    )
+    setIsPriceEdited(
+      item.prixModifie !== undefined && item.prixModifie !== item.prixVente,
+    )
+  }, [item.prixModifie, item.prixVente])
 
   // Gérer le changement de prix
   const handlePriceChange = (event) => {
@@ -37,18 +51,18 @@ const CartItem = ({ item, updateQuantity, updatePrice, removeItem }) => {
 
   // Confirmer le nouveau prix
   const confirmPriceChange = () => {
-    // Convertir la saisie en nombre flottant
     const newPrice = parseFloat(editPrice.replace(',', '.'))
     if (!isNaN(newPrice) && newPrice >= 0) {
-      updatePrice(item._id, newPrice) // Mettre à jour le prix dans l'état global
+      updatePrice(item._id, newPrice) // Mettre à jour le prix modifié
       setEditPrice(
         newPrice.toLocaleString('fr-FR', { minimumFractionDigits: 2 }),
-      ) // Formater pour l'affichage
+      )
+      setIsPriceEdited(true)
     } else {
-      // Si la conversion échoue, réinitialiser l'entrée avec la valeur originale formatée
       setEditPrice(
         originalPrice.toLocaleString('fr-FR', { minimumFractionDigits: 2 }),
       )
+      setIsPriceEdited(false)
     }
   }
 
