@@ -9,17 +9,19 @@ const useHandlePayClick = () => {
     useContext(CartContext)
 
   const handlePayClick = async (paymentType) => {
-    // Créez l'objet de facture à partir des articles du panier
     const invoiceItems = cartItems.map((item) => ({
       reference: item.reference,
       quantite: item.quantity,
       puHT: item.prixHT,
       puTTC: item.puTTC,
-      totalItem: item.totalItem,
       tauxTVA: item.tauxTVA,
+      totalItem: item.totalItem,
       montantTVA: item.montantTVA,
       remiseMajorationLabel: item.remiseMajorationLabel,
       remiseMajorationValue: item.remiseMajorationValue,
+      ...(item.prixModifie && {
+        prixOriginal: item.prixVente,
+      }),
     }))
 
     const totalTTC = calculateInvoiceTotal(cartItems)
