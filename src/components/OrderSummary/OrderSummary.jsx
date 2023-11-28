@@ -9,12 +9,11 @@ import {
   ListItem,
   ListItemText,
 } from '@mui/material'
-import { formatPrice } from '../../utils/priceUtils' // Importez seulement formatPrice
+import { formatPrice } from '../../utils/priceUtils'
 
 const OrderSummary = () => {
-  // Utilisez useContext pour accéder aux données du CartContext
-  const { cartItems, cartTotals, taxRate } = useContext(CartContext)
-
+  const { cartItems, cartTotals } = useContext(CartContext)
+  const tauxTVA = cartItems.length > 0 ? cartItems[0].tauxTVA : '0.00'
   return (
     <Card raised>
       <CardContent>
@@ -29,8 +28,9 @@ const OrderSummary = () => {
                   <>
                     Quantité: {item.quantity}
                     <br />
-                    Prix unitaire:{' '}
-                    {formatPrice(item.prixModifie ?? item.prixVente)}
+                    Prix unitaire HT: {formatPrice(item.prixHT)}
+                    <br />
+                    Prix unitaire TTC: {formatPrice(item.puTTC)}{' '}
                     {item.remiseMajorationLabel && (
                       <>
                         <br />
@@ -49,8 +49,7 @@ const OrderSummary = () => {
           Sous-total HT: {formatPrice(cartTotals.totalHT)}
         </Typography>
         <Typography>
-          TVA ({(taxRate * 100).toFixed(0)}%) :{' '}
-          {formatPrice(cartTotals.totalTaxes)}
+          TVA ({tauxTVA}%) : {formatPrice(cartTotals.totalTaxes)}
         </Typography>
         <Divider />
         <Typography variant="h6">

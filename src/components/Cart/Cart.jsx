@@ -23,7 +23,6 @@ import {
   formatPrice,
   calculateTotal,
   calculateInvoiceTotal,
-  calculateDiscountMarkup,
 } from '../../utils/priceUtils'
 
 const Cart = () => {
@@ -38,6 +37,7 @@ const Cart = () => {
     resumeInvoice,
     deleteInvoice,
     taxRate,
+    cartTotals,
   } = useContext(CartContext)
 
   const { printRef, handlePrint } = usePrintInvoice()
@@ -51,50 +51,33 @@ const Cart = () => {
   )
 
   const handlePayClick = async () => {
-    // Transformez chaque article du panier pour inclure les informations nécessaires
-    const invoiceItems = cartItems.map((item) => {
-      const prixOriginalTTC = parseFloat(item.prixVente)
-      const prixModifieTTC = item.prixModifie
-        ? parseFloat(item.prixModifie)
-        : prixOriginalTTC
+    const invoiceItems = cartItems.map((item) => ({
+      reference: item.reference,
+      quantite: item.quantity,
+      puHT: item.prixHT,
+      puTTC: item.puTTC,
+      tauxTVA: item.tauxTVA,
+      montantTVA: item.montantTVA,
+      remiseMajorationLabel: item.remiseMajorationLabel,
+      remiseMajorationValue: item.remiseMajorationValue,
+    }))
 
-      // Convertir les prix TTC en prix HT
-      const prixHT = prixModifieTTC / (1 + taxRate)
-      const montantTVA = prixHT * taxRate
-
-      // Utilisez la fonction calculateDiscountMarkup pour déterminer la remise ou la majoration
-      const { label: remiseMajorationLabel, value: remiseMajorationValue } =
-        calculateDiscountMarkup(prixOriginalTTC, prixModifieTTC)
-
-      return {
-        reference: item.reference,
-        quantite: item.quantity,
-        puHT: prixHT.toFixed(2),
-        puTTC: prixModifieTTC.toFixed(2),
-        tauxTVA: (taxRate * 100).toFixed(2),
-        montantTVA: montantTVA.toFixed(2),
-        remiseMajorationLabel,
-        remiseMajorationValue,
-      }
-    })
-
-    // Calculez le total TTC de la facture à partir des prix TTC modifiés
-    const totalTTC = calculateInvoiceTotal(cartItems)
+    const totalTTC = cartTotals.totalTTC.toFixed(2)
 
     // Créez l'objet de facture à envoyer
     const invoiceData = {
       items: invoiceItems,
-      totalTTC, // Utiliser le total TTC calculé ci-dessus
+      totalTTC: totalTTC,
       date: new Date().toISOString(),
-      paymentType, // Type de paiement
-      // ...autres informations que vous souhaitez inclure
+      paymentType,
+      // ...autres informations pertinentes pour la facture
     }
 
     try {
-      const newInvoice = await addInvoice(invoiceData)
+      const newInvoice = await addInvoice(invoiceData) // Utilise API pour ajouter la facture
       console.log('New invoice added:', newInvoice)
-      setInvoiceData(newInvoice) // Stockez les données retournées par l'API (y compris le numéro de facture)
-      setCartItems([]) // Vide le panier après le paiement
+      setInvoiceData(newInvoice) // Mettre à jour l'état avec les données de la nouvelle facture
+      setCartItems([])
       setIsModalOpen(true)
     } catch (error) {
       console.error('An error occurred while adding the invoice:', error)

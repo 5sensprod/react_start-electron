@@ -20,20 +20,25 @@ export const CartProvider = ({ children }) => {
   }
 
   const enrichCartItem = (item) => {
-    const { label, value } = calculateDiscountMarkup(
-      item.prixVente,
-      item.prixModifie,
-    )
     const priceToUse = item.prixModifie ?? item.prixVente
     const prixHT = priceToUse / (1 + taxRate)
     const montantTVA = calculateTax(prixHT, taxRate)
+    const tauxTVA = (taxRate * 100).toFixed(2)
 
     return {
       ...item,
       prixHT: prixHT.toFixed(2),
+      puTTC: priceToUse.toFixed(2),
       montantTVA: montantTVA.toFixed(2),
-      remiseMajorationLabel: label,
-      remiseMajorationValue: value,
+      tauxTVA,
+      remiseMajorationLabel: calculateDiscountMarkup(
+        item.prixVente,
+        item.prixModifie,
+      ).label,
+      remiseMajorationValue: calculateDiscountMarkup(
+        item.prixVente,
+        item.prixModifie,
+      ).value,
     }
   }
 
@@ -61,11 +66,11 @@ export const CartProvider = ({ children }) => {
       id: Date.now(),
       items: cartItems.map((item) => ({
         ...item,
-        prixModifie: item.prixModifie, // Conserver le prix modifié
+        prixModifie: item.prixModifie,
       })),
     }
     setOnHoldInvoices((prevInvoices) => [...prevInvoices, newInvoice])
-    setCartItems([]) // Vider le panier actuel
+    setCartItems([])
   }
 
   // Reprendre une facture en attente
