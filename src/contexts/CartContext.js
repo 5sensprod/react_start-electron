@@ -18,6 +18,8 @@ export const CartProvider = ({ children }) => {
     totalTaxes: 0,
   })
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [invoiceData, setInvoiceData] = useState(null)
+
   const enrichCartItem = (item) => {
     const priceToUse = item.prixModifie ?? item.prixVente
     const prixHT = priceToUse / (1 + taxRate)
@@ -157,6 +159,8 @@ export const CartProvider = ({ children }) => {
         taxRate,
         isModalOpen,
         setIsModalOpen,
+        invoiceData,
+        setInvoiceData,
       }}
     >
       {children}

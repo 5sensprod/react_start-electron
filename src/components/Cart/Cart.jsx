@@ -36,15 +36,18 @@ const Cart = () => {
     resumeInvoice,
     deleteInvoice,
     taxRate,
+    isModalOpen,
+    setIsModalOpen,
+    setInvoiceData,
+    invoiceData,
   } = useContext(CartContext)
 
   const { printRef, handlePrint } = usePrintInvoice()
-
   const [paymentType, setPaymentType] = useState('CB')
-  const { isModalOpen, setIsModalOpen } = useContext(CartContext)
-  const [invoiceData, setInvoiceData] = useState(null)
 
-  const handlePayClick = useHandlePayClick(setInvoiceData)
+  // Utilisez le hook useHandlePayClick et passez setInvoiceData
+  const handlePayment = useHandlePayClick(paymentType, setInvoiceData)
+
   const isCurrentCartOnHold = onHoldInvoices.some(
     (invoice) => JSON.stringify(invoice.items) === JSON.stringify(cartItems),
   )
@@ -108,7 +111,7 @@ const Cart = () => {
                     </Button>
                   )}
                   <Button
-                    onClick={() => handlePayClick(paymentType)}
+                    onClick={() => handlePayment(paymentType)}
                     variant="contained"
                     color="primary"
                   >

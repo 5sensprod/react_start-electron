@@ -1,13 +1,15 @@
+// useHandlePayClick.js
 import { useContext } from 'react'
 import { CartContext } from '../contexts/CartContext'
 import { addInvoice } from '../api/invoiceService'
 import { calculateInvoiceTotal } from '../utils/priceUtils'
 
-const useHandlePayClick = (setInvoiceData) => {
-  const { cartItems, setCartItems, setIsModalOpen } = useContext(CartContext)
+const useHandlePayClick = () => {
+  const { cartItems, setCartItems, setIsModalOpen, setInvoiceData } =
+    useContext(CartContext)
 
   const handlePayClick = async (paymentType) => {
-    const totalTTC = calculateInvoiceTotal(cartItems)
+    // Créez l'objet de facture à partir des articles du panier
     const invoiceItems = cartItems.map((item) => ({
       reference: item.reference,
       quantite: item.quantity,
@@ -19,21 +21,23 @@ const useHandlePayClick = (setInvoiceData) => {
       remiseMajorationValue: item.remiseMajorationValue,
     }))
 
-    // Créez l'objet de facture à envoyer
-    const invoiceData = {
+    const totalTTC = calculateInvoiceTotal(cartItems)
+
+    // Créez un nouvel objet de données de facture pour l'envoyer
+    const newInvoiceData = {
       items: invoiceItems,
       totalTTC: totalTTC,
       date: new Date().toISOString(),
       paymentType,
-      // ...autres informations pertinentes pour la facture
     }
 
     try {
-      const newInvoice = await addInvoice(invoiceData)
+      // Envoyez les données de la facture à l'API et mettez à jour l'état
+      const newInvoice = await addInvoice(newInvoiceData)
       console.log('New invoice added:', newInvoice)
-      setInvoiceData(newInvoice)
-      setCartItems([])
-      setIsModalOpen(true)
+      setInvoiceData(newInvoice) // Sauvegardez les données de la nouvelle facture dans l'état
+      setCartItems([]) // Videz le panier
+      setIsModalOpen(true) // Ouvrez la modal
     } catch (error) {
       console.error('An error occurred while adding the invoice:', error)
     }
