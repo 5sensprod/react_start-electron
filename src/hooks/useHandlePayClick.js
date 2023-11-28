@@ -36,9 +36,9 @@ const useHandlePayClick = () => {
       // Envoyez les données de la facture à l'API et mettez à jour l'état
       const newInvoice = await addInvoice(newInvoiceData)
       console.log('New invoice added:', newInvoice)
-      setInvoiceData(newInvoice) // Sauvegardez les données de la nouvelle facture dans l'état
-      setCartItems([]) // Videz le panier
-      setIsModalOpen(true) // Ouvrez la modal
+      setInvoiceData(newInvoice)
+      setCartItems([])
+      setIsModalOpen(true)
     } catch (error) {
       console.error('An error occurred while adding the invoice:', error)
     }
