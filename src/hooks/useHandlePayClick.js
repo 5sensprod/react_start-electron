@@ -2,7 +2,7 @@
 import { useContext } from 'react'
 import { CartContext } from '../contexts/CartContext'
 import { addInvoice } from '../api/invoiceService'
-import { calculateInvoiceTotal, calculateTotalItem } from '../utils/priceUtils'
+import { calculateInvoiceTotal } from '../utils/priceUtils'
 
 const useHandlePayClick = () => {
   const { cartItems, setCartItems, setIsModalOpen, setInvoiceData } =
@@ -15,11 +15,11 @@ const useHandlePayClick = () => {
       quantite: item.quantity,
       puHT: item.prixHT,
       puTTC: item.puTTC,
+      totalItem: item.totalItem,
       tauxTVA: item.tauxTVA,
       montantTVA: item.montantTVA,
       remiseMajorationLabel: item.remiseMajorationLabel,
       remiseMajorationValue: item.remiseMajorationValue,
-      totalItem: calculateTotalItem(item),
     }))
 
     const totalTTC = calculateInvoiceTotal(cartItems)

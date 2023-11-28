@@ -51,6 +51,9 @@ const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
             <Typography variant="body2">
               Prix unitaire TTC: {item.puTTC} €
             </Typography>
+            <Typography variant="body2">
+              Montant total: {item.totalItem} €
+            </Typography>
             <Typography variant="body2">Taux TVA: {item.tauxTVA} %</Typography>
             <Typography variant="body2">
               Montant TVA: {item.montantTVA} €
@@ -60,9 +63,6 @@ const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
                 {item.remiseMajorationLabel}: {item.remiseMajorationValue}
               </Typography>
             )}
-            <Typography variant="body2">
-              Montant total: {item.totalItem} €
-            </Typography>
           </div>
         ))}
       </div>
