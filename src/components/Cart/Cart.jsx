@@ -37,6 +37,7 @@ const Cart = () => {
     holdInvoice,
     resumeInvoice,
     deleteInvoice,
+    taxRate,
   } = useContext(CartContext)
 
   const { printRef, handlePrint } = usePrintInvoice()
@@ -45,7 +46,6 @@ const Cart = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [invoiceData, setInvoiceData] = useState(null)
 
-  const taxRate = 0.2
   const isCurrentCartOnHold = onHoldInvoices.some(
     (invoice) => JSON.stringify(invoice.items) === JSON.stringify(cartItems),
   )

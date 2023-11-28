@@ -1,10 +1,59 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, useState, useEffect } from 'react'
+import { calculateTotal, calculateDiscountMarkup } from '../utils/priceUtils'
 
 export const CartContext = createContext()
+
+const taxRate = 0.2
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([])
   const [onHoldInvoices, setOnHoldInvoices] = useState([])
+  const [cartTotals, setCartTotals] = useState({
+    totalHT: 0,
+    totalTTC: 0,
+    totalTaxes: 0,
+  })
+
+  // Fonction pour calculer la TVA
+  const calculateTax = (price, taxRate) => {
+    return price * taxRate
+  }
+
+  const enrichCartItem = (item) => {
+    const { label, value } = calculateDiscountMarkup(
+      item.prixVente,
+      item.prixModifie,
+    )
+    const priceToUse = item.prixModifie ?? item.prixVente
+    const prixHT = priceToUse / (1 + taxRate)
+    const montantTVA = calculateTax(prixHT, taxRate)
+
+    return {
+      ...item,
+      prixHT: prixHT.toFixed(2),
+      montantTVA: montantTVA.toFixed(2),
+      remiseMajorationLabel: label,
+      remiseMajorationValue: value,
+    }
+  }
+
+  // Calculer les totaux HT, TTC et les taxes pour les articles du panier
+  const calculateCartTotals = (items) => {
+    const totalHT = calculateTotal(items, (item) => item.prixHT)
+    const totalTTC = calculateTotal(
+      items,
+      (item) => item.prixModifie ?? item.prixVente,
+    )
+    const totalTaxes = totalTTC - totalHT
+
+    return { totalHT, totalTTC, totalTaxes }
+  }
+
+  // Mettez à jour les totaux chaque fois que le panier est modifié
+  useEffect(() => {
+    const newCartTotals = calculateCartTotals(cartItems)
+    setCartTotals(newCartTotals)
+  }, [cartItems])
 
   // Mettre la facture en attente
   const holdInvoice = () => {
@@ -40,18 +89,22 @@ export const CartProvider = ({ children }) => {
   // Ajouter un produit au panier
   const addToCart = (product) => {
     setCartItems((currentItems) => {
-      // Vérifier si le produit est déjà dans le panier
       const itemIndex = currentItems.findIndex(
         (item) => item._id === product._id,
       )
+
       if (itemIndex > -1) {
-        // Mettre à jour la quantité si le produit existe déjà
+        // Le produit est déjà dans le panier, donc nous augmentons simplement la quantité.
         const newItems = [...currentItems]
-        newItems[itemIndex].quantity += 1
+        newItems[itemIndex] = enrichCartItem({
+          ...newItems[itemIndex],
+          quantity: newItems[itemIndex].quantity + 1,
+        })
         return newItems
       } else {
-        // Ajouter le nouveau produit avec une quantité initiale de 1
-        return [...currentItems, { ...product, quantity: 1 }]
+        // Le produit n'est pas dans le panier, nous l'ajoutons après l'avoir enrichi.
+        const newItem = enrichCartItem({ ...product, quantity: 1 })
+        return [...currentItems, newItem]
       }
     })
   }
@@ -60,7 +113,7 @@ export const CartProvider = ({ children }) => {
   const updateQuantity = (productId, quantity) => {
     setCartItems((currentItems) =>
       currentItems.map((item) =>
-        item._id === productId ? { ...item, quantity: quantity } : item,
+        item._id === productId ? enrichCartItem({ ...item, quantity }) : item,
       ),
     )
   }
@@ -69,7 +122,9 @@ export const CartProvider = ({ children }) => {
   const updatePrice = (productId, newPrice) => {
     setCartItems((currentItems) =>
       currentItems.map((item) =>
-        item._id === productId ? { ...item, prixModifie: newPrice } : item,
+        item._id === productId
+          ? enrichCartItem({ ...item, prixModifie: newPrice })
+          : item,
       ),
     )
   }
@@ -94,6 +149,8 @@ export const CartProvider = ({ children }) => {
         resumeInvoice,
         deleteInvoice,
         updatePrice,
+        cartTotals,
+        taxRate,
       }}
     >
       {children}
