@@ -11,19 +11,11 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Modal,
-  Paper,
-  IconButton,
 } from '@mui/material'
-import DeleteIcon from '@mui/icons-material/Delete'
-import InvoicePrintComponent from '../InvoicePrintComponent'
-import usePrintInvoice from '../../hooks/usePrintInvoice'
-import {
-  formatPrice,
-  calculateTotal,
-  calculateInvoiceTotal,
-} from '../../utils/priceUtils'
+import { formatPrice, calculateTotal } from '../../utils/priceUtils'
 import useHandlePayClick from '../../hooks/useHandlePayClick'
+import InvoiceModal from '../invoice/InvoiceModal'
+import OnHoldInvoices from '../invoice/OnHoldInvoices'
 
 const Cart = () => {
   const {
@@ -33,19 +25,12 @@ const Cart = () => {
     updatePrice,
     removeItem,
     holdInvoice,
-    resumeInvoice,
-    deleteInvoice,
     taxRate,
-    isModalOpen,
-    setIsModalOpen,
     setInvoiceData,
-    invoiceData,
   } = useContext(CartContext)
 
-  const { printRef, handlePrint } = usePrintInvoice()
   const [paymentType, setPaymentType] = useState('CB')
 
-  // Utilisez le hook useHandlePayClick et passez setInvoiceData
   const handlePayment = useHandlePayClick(paymentType, setInvoiceData)
 
   const isCurrentCartOnHold = onHoldInvoices.some(
@@ -129,76 +114,9 @@ const Cart = () => {
             <OrderSummary cartItems={cartItems} taxRate={taxRate} />
           </Grid>
         )}
-        {onHoldInvoices.length > 0 && (
-          <Grid item xs={12}>
-            <Typography variant="h6">Factures en attente:</Typography>
-            {onHoldInvoices.map((invoice, index) => {
-              // Calculez le total de la facture en attente actuelle
-              const invoiceTotal = calculateInvoiceTotal(invoice.items)
-              return (
-                <Box
-                  key={index}
-                  sx={{
-                    marginBottom: '8px',
-                    flexDirection: 'column', // Définit la direction de la boîte sur la colonne
-                  }}
-                >
-                  <Typography sx={{ marginBottom: '4px' }}>
-                    {formatPrice(invoiceTotal)} - Facture en attente #
-                    {index + 1}
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                    }}
-                  >
-                    <Button
-                      onClick={() => resumeInvoice(index)}
-                      variant="contained"
-                      sx={{ marginRight: '8px' }}
-                    >
-                      Reprendre
-                    </Button>
-                    <IconButton
-                      onClick={() => deleteInvoice(index)}
-                      sx={{ marginLeft: '8px' }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Box>
-                </Box>
-              )
-            })}
-          </Grid>
-        )}
+        <OnHoldInvoices />
       </Grid>
-      <Modal
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Paper
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            padding: '20px',
-          }}
-        >
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            La facture a été enregistrée avec succès.
-          </Typography>
-          {invoiceData && (
-            <InvoicePrintComponent ref={printRef} invoiceData={invoiceData} />
-          )}
-          <Button onClick={handlePrint} variant="contained">
-            Imprimer la facture
-          </Button>
-        </Paper>
-      </Modal>
+      <InvoiceModal />
     </>
   )
 }

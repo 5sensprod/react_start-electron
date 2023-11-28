@@ -38,3 +38,10 @@ export const calculateDiscountMarkup = (originalPrice, modifiedPrice) => {
 export const calculateTax = (price, taxRate) => {
   return price * taxRate
 }
+
+// Cette fonction calcule le total par ligne d'article
+export const calculateTotalItem = (item) => {
+  const priceToUse = item.prixModifie ?? item.prixVente
+  const total = priceToUse * item.quantity
+  return total.toFixed(2) // Arrondi à deux décimales
+}

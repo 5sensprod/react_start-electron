@@ -1,7 +1,7 @@
 // src/components/InvoicePrintComponent.js
 import React, { useContext } from 'react'
 import { Typography } from '@mui/material'
-import { CompanyInfoContext } from '../contexts/CompanyInfoContext'
+import { CompanyInfoContext } from '../../contexts/CompanyInfoContext'
 
 const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
   const companyInfo = useContext(CompanyInfoContext)
@@ -60,6 +60,9 @@ const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
                 {item.remiseMajorationLabel}: {item.remiseMajorationValue}
               </Typography>
             )}
+            <Typography variant="body2">
+              Montant total: {item.totalItem} €
+            </Typography>
           </div>
         ))}
       </div>

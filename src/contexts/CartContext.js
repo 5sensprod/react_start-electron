@@ -3,6 +3,7 @@ import {
   calculateTotal,
   calculateDiscountMarkup,
   calculateTax,
+  calculateTotalItem,
 } from '../utils/priceUtils'
 
 export const CartContext = createContext()
@@ -25,6 +26,7 @@ export const CartProvider = ({ children }) => {
     const prixHT = priceToUse / (1 + taxRate)
     const montantTVA = calculateTax(prixHT, taxRate)
     const tauxTVA = (taxRate * 100).toFixed(2)
+    const totalItem = calculateTotalItem(item)
 
     return {
       ...item,
@@ -40,6 +42,7 @@ export const CartProvider = ({ children }) => {
         item.prixVente,
         item.prixModifie,
       ).value,
+      totalItem,
     }
   }
 
