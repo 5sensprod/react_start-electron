@@ -92,7 +92,7 @@ const Cart = () => {
         reference: item.reference,
         quantite: item.quantity,
         puHT: prixHT.toFixed(2),
-        puTTC: prixModifieTTC.toFixed(2), // Utiliser le P.U TTC modifié
+        puTTC: prixModifieTTC.toFixed(2),
         tauxTVA: (taxRate * 100).toFixed(2),
         montantTVA: montantTVA.toFixed(2),
         remiseMajorationLabel,

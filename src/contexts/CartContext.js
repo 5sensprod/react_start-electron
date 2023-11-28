@@ -1,9 +1,7 @@
 import React, { createContext, useState } from 'react'
 
-// Création du Contexte qui sera utilisé pour fournir et consommer les données du panier
 export const CartContext = createContext()
 
-// Composant Provider qui enveloppera votre application ou une partie de celle-ci
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([])
   const [onHoldInvoices, setOnHoldInvoices] = useState([])
@@ -83,11 +81,6 @@ export const CartProvider = ({ children }) => {
     )
   }
 
-  // const checkout = () => {
-  //   console.log('Procéder au paiement avec les articles du panier:', cartItems)
-  //   setCartItems([])
-  // }
-
   return (
     <CartContext.Provider
       value={{
@@ -97,7 +90,6 @@ export const CartProvider = ({ children }) => {
         addToCart,
         updateQuantity,
         removeItem,
-        // checkout,
         holdInvoice,
         resumeInvoice,
         deleteInvoice,
