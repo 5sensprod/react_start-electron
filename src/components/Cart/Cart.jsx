@@ -19,6 +19,12 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { addInvoice } from '../../api/invoiceService'
 import InvoicePrintComponent from '../InvoicePrintComponent'
 import usePrintInvoice from '../../hooks/usePrintInvoice'
+import {
+  formatPrice,
+  calculateTotal,
+  calculateInvoiceTotal,
+  calculateDiscountMarkup,
+} from '../../utils/priceUtils'
 
 const Cart = () => {
   const {
@@ -44,27 +50,6 @@ const Cart = () => {
     (invoice) => JSON.stringify(invoice.items) === JSON.stringify(cartItems),
   )
 
-  const formatPrice = (price) => {
-    return price.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
-  }
-
-  const calculateTotal = (items) => {
-    return items.reduce((acc, item) => {
-      const itemPrice =
-        item.prixModifie !== undefined ? item.prixModifie : item.prixVente
-      const totalItemPrice = (itemPrice * item.quantity).toFixed(2)
-      return (parseFloat(acc) + parseFloat(totalItemPrice)).toFixed(2)
-    }, 0)
-  }
-
-  const calculateInvoiceTotal = (invoiceItems) => {
-    return invoiceItems.reduce((total, item) => {
-      // Utilise le prix modifié s'il existe, sinon utilise le prix original
-      const priceToUse = item.prixModifie ?? item.prixVente
-      return total + item.quantity * priceToUse
-    }, 0)
-  }
-
   const handlePayClick = async () => {
     // Transformez chaque article du panier pour inclure les informations nécessaires
     const invoiceItems = cartItems.map((item) => {
@@ -77,16 +62,9 @@ const Cart = () => {
       const prixHT = prixModifieTTC / (1 + taxRate)
       const montantTVA = prixHT * taxRate
 
-      // Déterminer la remise ou la majoration
-      let remiseMajorationLabel = ''
-      let remiseMajorationValue = 0
-      if (item.prixModifie) {
-        const differenceTTC = prixModifieTTC - prixOriginalTTC
-        remiseMajorationValue = Math.abs(
-          (differenceTTC / prixOriginalTTC) * 100,
-        )
-        remiseMajorationLabel = differenceTTC < 0 ? 'Remise' : 'Majoration'
-      }
+      // Utilisez la fonction calculateDiscountMarkup pour déterminer la remise ou la majoration
+      const { label: remiseMajorationLabel, value: remiseMajorationValue } =
+        calculateDiscountMarkup(prixOriginalTTC, prixModifieTTC)
 
       return {
         reference: item.reference,
@@ -96,16 +74,12 @@ const Cart = () => {
         tauxTVA: (taxRate * 100).toFixed(2),
         montantTVA: montantTVA.toFixed(2),
         remiseMajorationLabel,
-        remiseMajorationValue: remiseMajorationValue.toFixed(2),
+        remiseMajorationValue,
       }
     })
 
     // Calculez le total TTC de la facture à partir des prix TTC modifiés
-    const totalTTC = invoiceItems
-      .reduce((total, item) => {
-        return total + item.quantite * parseFloat(item.puTTC)
-      }, 0)
-      .toFixed(2)
+    const totalTTC = calculateInvoiceTotal(cartItems)
 
     // Créez l'objet de facture à envoyer
     const invoiceData = {
@@ -121,7 +95,7 @@ const Cart = () => {
       console.log('New invoice added:', newInvoice)
       setInvoiceData(newInvoice) // Stockez les données retournées par l'API (y compris le numéro de facture)
       setCartItems([]) // Vide le panier après le paiement
-      setIsModalOpen(true) // Ouvre la modal pour afficher la facture
+      setIsModalOpen(true)
     } catch (error) {
       console.error('An error occurred while adding the invoice:', error)
     }
@@ -161,7 +135,13 @@ const Cart = () => {
                   />
                 ))}
                 <Typography variant="h5">
-                  Total: {formatPrice(calculateTotal(cartItems))}
+                  Total:{' '}
+                  {formatPrice(
+                    calculateTotal(
+                      cartItems,
+                      (item) => item.prixModifie ?? item.prixVente,
+                    ),
+                  )}
                 </Typography>
                 <Box
                   sx={{
