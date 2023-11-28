@@ -16,7 +16,6 @@ import {
   IconButton,
 } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { addInvoice } from '../../api/invoiceService'
 import InvoicePrintComponent from '../InvoicePrintComponent'
 import usePrintInvoice from '../../hooks/usePrintInvoice'
 import {
@@ -24,11 +23,11 @@ import {
   calculateTotal,
   calculateInvoiceTotal,
 } from '../../utils/priceUtils'
+import useHandlePayClick from '../../hooks/useHandlePayClick'
 
 const Cart = () => {
   const {
     cartItems,
-    setCartItems,
     onHoldInvoices,
     updateQuantity,
     updatePrice,
@@ -37,52 +36,18 @@ const Cart = () => {
     resumeInvoice,
     deleteInvoice,
     taxRate,
-    cartTotals,
   } = useContext(CartContext)
 
   const { printRef, handlePrint } = usePrintInvoice()
 
   const [paymentType, setPaymentType] = useState('CB')
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const { isModalOpen, setIsModalOpen } = useContext(CartContext)
   const [invoiceData, setInvoiceData] = useState(null)
 
+  const handlePayClick = useHandlePayClick(setInvoiceData)
   const isCurrentCartOnHold = onHoldInvoices.some(
     (invoice) => JSON.stringify(invoice.items) === JSON.stringify(cartItems),
   )
-
-  const handlePayClick = async () => {
-    const invoiceItems = cartItems.map((item) => ({
-      reference: item.reference,
-      quantite: item.quantity,
-      puHT: item.prixHT,
-      puTTC: item.puTTC,
-      tauxTVA: item.tauxTVA,
-      montantTVA: item.montantTVA,
-      remiseMajorationLabel: item.remiseMajorationLabel,
-      remiseMajorationValue: item.remiseMajorationValue,
-    }))
-
-    const totalTTC = cartTotals.totalTTC.toFixed(2)
-
-    // Créez l'objet de facture à envoyer
-    const invoiceData = {
-      items: invoiceItems,
-      totalTTC: totalTTC,
-      date: new Date().toISOString(),
-      paymentType,
-      // ...autres informations pertinentes pour la facture
-    }
-
-    try {
-      const newInvoice = await addInvoice(invoiceData) // Utilise API pour ajouter la facture
-      console.log('New invoice added:', newInvoice)
-      setInvoiceData(newInvoice) // Mettre à jour l'état avec les données de la nouvelle facture
-      setCartItems([])
-      setIsModalOpen(true)
-    } catch (error) {
-      console.error('An error occurred while adding the invoice:', error)
-    }
-  }
 
   return (
     <>
@@ -156,9 +121,11 @@ const Cart = () => {
             )}
           </Box>
         </Grid>
-        <Grid item xs={12} md={4}>
-          <OrderSummary cartItems={cartItems} taxRate={taxRate} />
-        </Grid>
+        {cartItems.length > 0 && (
+          <Grid item xs={12} md={4}>
+            <OrderSummary cartItems={cartItems} taxRate={taxRate} />
+          </Grid>
+        )}
         {onHoldInvoices.length > 0 && (
           <Grid item xs={12}>
             <Typography variant="h6">Factures en attente:</Typography>

@@ -17,7 +17,7 @@ const OrderSummary = () => {
   return (
     <Card raised>
       <CardContent>
-        <Typography variant="h6">Résumé de la commande</Typography>
+        <Typography variant="h6">Ticket</Typography>
         <Divider />
         <List>
           {cartItems.map((item) => (

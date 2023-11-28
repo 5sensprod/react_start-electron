@@ -33,3 +33,8 @@ export const calculateDiscountMarkup = (originalPrice, modifiedPrice) => {
     value,
   }
 }
+
+// Fonction pour calculer la TVA
+export const calculateTax = (price, taxRate) => {
+  return price * taxRate
+}

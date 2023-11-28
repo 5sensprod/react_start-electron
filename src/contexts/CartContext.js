@@ -1,5 +1,9 @@
 import React, { createContext, useState, useEffect } from 'react'
-import { calculateTotal, calculateDiscountMarkup } from '../utils/priceUtils'
+import {
+  calculateTotal,
+  calculateDiscountMarkup,
+  calculateTax,
+} from '../utils/priceUtils'
 
 export const CartContext = createContext()
 
@@ -13,12 +17,7 @@ export const CartProvider = ({ children }) => {
     totalTTC: 0,
     totalTaxes: 0,
   })
-
-  // Fonction pour calculer la TVA
-  const calculateTax = (price, taxRate) => {
-    return price * taxRate
-  }
-
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const enrichCartItem = (item) => {
     const priceToUse = item.prixModifie ?? item.prixVente
     const prixHT = priceToUse / (1 + taxRate)
@@ -156,6 +155,8 @@ export const CartProvider = ({ children }) => {
         updatePrice,
         cartTotals,
         taxRate,
+        isModalOpen,
+        setIsModalOpen,
       }}
     >
       {children}
