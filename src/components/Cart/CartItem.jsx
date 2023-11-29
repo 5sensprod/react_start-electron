@@ -1,79 +1,46 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
-  Box,
   Card,
   CardContent,
   Typography,
   IconButton,
   TextField,
   InputAdornment,
+  Box,
 } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import ReplayIcon from '@mui/icons-material/Replay'
 import { formatPrice } from '../../utils/priceUtils'
 
-const CartItem = ({ item, updateQuantity, updatePrice, removeItem }) => {
-  const [editPrice, setEditPrice] = useState(
+const CartItem = ({ item, updatePrice, updateQuantity, removeItem }) => {
+  const originalPrice = item.prixVente
+  const [priceInput, setPriceInput] = useState(
     item.prixModifie
-      ? item.prixModifie.toLocaleString('fr-FR')
-      : item.prixVente.toLocaleString('fr-FR'),
+      ? formatPrice(item.prixModifie)
+      : formatPrice(originalPrice),
   )
 
-  const [isPriceEdited, setIsPriceEdited] = useState(
-    item.prixModifie !== undefined && item.prixModifie !== item.prixVente,
-  )
+  const isPriceEdited =
+    item.prixModifie !== undefined && item.prixModifie !== originalPrice
 
-  const [originalPrice] = useState(item.prixVente)
-
-  useEffect(() => {
-    setEditPrice(
-      item.prixModifie?.toLocaleString('fr-FR') ||
-        item.prixVente.toLocaleString('fr-FR'),
-    )
-    setIsPriceEdited(
-      item.prixModifie !== undefined && item.prixModifie !== item.prixVente,
-    )
-  }, [item.prixModifie, item.prixVente])
-
-  // Gérer le changement de prix
   const handlePriceChange = (event) => {
-    // Autoriser les chiffres, la virgule et le point
-    let value = event.target.value.replace(/[^0-9,.]/g, '')
-    const firstCommaIndex = value.indexOf(',')
-    if (firstCommaIndex !== -1) {
-      value =
-        value.slice(0, firstCommaIndex) +
-        ',' +
-        value.slice(firstCommaIndex + 1).replace(/,/g, '')
-    }
-    setEditPrice(value)
-    setIsPriceEdited(true)
+    setPriceInput(event.target.value)
   }
 
-  // Confirmer le nouveau prix
   const confirmPriceChange = () => {
-    const newPrice = parseFloat(editPrice.replace(',', '.'))
+    const newPrice = parseFloat(
+      priceInput.replace(/[^0-9,.-]/g, '').replace(',', '.'),
+    )
     if (!isNaN(newPrice) && newPrice >= 0) {
-      updatePrice(item._id, newPrice) // Mettre à jour le prix modifié
-      setEditPrice(newPrice.toLocaleString('fr-FR'))
-      setIsPriceEdited(true)
-    } else {
-      setEditPrice(
-        originalPrice.toLocaleString('fr-FR', { minimumFractionDigits: 2 }),
-      )
-      setIsPriceEdited(false)
+      updatePrice(item._id, newPrice)
+      setPriceInput(formatPrice(newPrice))
     }
   }
 
-  // Fonction pour réinitialiser le prix édité au prix original
   const resetPrice = () => {
-    setEditPrice(
-      originalPrice.toLocaleString('fr-FR', { minimumFractionDigits: 2 }),
-    )
-    setIsPriceEdited(false) // Cache l'affichage du prix original
-    updatePrice(item._id, originalPrice) // Met à jour le prix dans l'état global
+    setPriceInput(formatPrice(originalPrice))
+    updatePrice(item._id, originalPrice)
   }
-
   const handleQuantityChange = (event) => {
     const newQuantity = parseInt(event.target.value, 10)
     if (newQuantity > 0) {
@@ -93,56 +60,39 @@ const CartItem = ({ item, updateQuantity, updatePrice, removeItem }) => {
         <Typography variant="h6">{item.reference}</Typography>
         <TextField
           type="text"
-          value={formatPrice(editPrice)}
+          value={priceInput}
           onChange={handlePriceChange}
           onBlur={confirmPriceChange}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               confirmPriceChange()
-              e.target.select()
+              e.target.blur()
             }
           }}
           InputProps={{
             endAdornment: <InputAdornment position="end">€</InputAdornment>,
           }}
         />
-        {isPriceEdited &&
-          originalPrice !== parseFloat(editPrice.replace(',', '.')) && (
-            <Box>
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                component="div"
-                sx={{ display: 'flex', alignItems: 'center' }}
-              >
-                Prix original:{' '}
-                {originalPrice.toLocaleString('fr-FR', {
-                  style: 'currency',
-                  currency: 'EUR',
-                })}
-                <IconButton
-                  onClick={resetPrice}
-                  edge="end"
-                  size="small"
-                  sx={{ margin: 1 }}
-                >
-                  <ReplayIcon /> {/* Icône de réinitialisation */}
-                </IconButton>
-              </Typography>
-            </Box>
-          )}
-        <Box sx={{ marginTop: '10px' }}>
-          <TextField
-            type="number"
-            value={item.quantity}
-            onChange={handleQuantityChange}
-            inputProps={{ min: 0 }}
-            size="small"
-          />
-          <IconButton onClick={handleRemoveClick}>
-            <DeleteIcon />
-          </IconButton>
-        </Box>
+        {isPriceEdited && (
+          <Box>
+            <Typography variant="body2" color="textSecondary">
+              Prix catalogue : {formatPrice(originalPrice)}
+              <IconButton onClick={resetPrice} size="small">
+                <ReplayIcon />
+              </IconButton>
+            </Typography>
+          </Box>
+        )}
+        <TextField
+          type="number"
+          value={item.quantity}
+          onChange={handleQuantityChange}
+          inputProps={{ min: 0 }}
+          size="small"
+        />
+        <IconButton onClick={handleRemoveClick}>
+          <DeleteIcon />
+        </IconButton>
       </CardContent>
     </Card>
   )
