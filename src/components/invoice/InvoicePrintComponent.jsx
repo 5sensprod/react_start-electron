@@ -56,7 +56,7 @@ const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
 
   const generateTableRowCells = (item) => {
     return (
-      <tr>
+      <>
         <td>{item.reference}</td>
         {hasAnyDiscountOrMarkup && (
           <td align="right">
@@ -77,7 +77,7 @@ const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
           </td>
         )}
         <td align="right">{formatNumberFrench(item.totalItem)} €</td>
-      </tr>
+      </>
     )
   }
 
@@ -114,14 +114,14 @@ const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
         <table className="invoice-table" aria-label="facture articles">
           <thead>{generateTableHeaders(invoiceData.items)}</thead>
           <tbody>
-            {invoiceData.items.map((item, index) =>
-              generateTableRowCells(item),
-            )}
+            {invoiceData.items.map((item, index) => (
+              <tr key={index}>{generateTableRowCells(item)}</tr>
+            ))}
           </tbody>
         </table>
       </div>
       <Grid container justifyContent="flex-end">
-        <Grid item xs={4}>
+        <Grid item xs={6}>
           <table className="invoice-table invoice-total">
             <tbody>
               <tr>

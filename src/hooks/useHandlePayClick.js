@@ -31,7 +31,7 @@ const useHandlePayClick = () => {
     // Créez un nouvel objet de données de facture pour l'envoyer
     const newInvoiceData = {
       items: invoiceItems,
-      totalHT: cartTotals.totalHT,
+      totalHT: cartTotals.totalHT.toFixed(2),
       totalTVA: cartTotals.totalTaxes.toFixed(2),
       totalTTC: cartTotals.totalTTC,
       date: new Date().toISOString(),
