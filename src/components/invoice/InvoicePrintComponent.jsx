@@ -48,23 +48,23 @@ const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
 
   const generateTableHeaders = () => {
     return [
-      <TableCell key="description">Description</TableCell>,
+      <TableCell key="description">Référence</TableCell>,
       hasAnyDiscountOrMarkup && (
         <TableCell key="pxCatTTC" align="right">
           Px Cat. TTC
         </TableCell>
       ),
       <TableCell key="quantity" align="right">
-        Quantité
+        Qté
       </TableCell>,
       <TableCell key="puHT" align="right">
-        Prix unitaire HT
+        P.U HT
       </TableCell>,
       <TableCell key="tvaPercentage" align="right">
-        TVA %
+        TVA
       </TableCell>,
       <TableCell key="puTTC" align="right">
-        Prix unitaire TTC
+        P.U TTC
       </TableCell>,
       hasAnyDiscountOrMarkup && (
         <TableCell key="discountOrMarkup" align="right">
