@@ -32,7 +32,7 @@ const useHandlePayClick = () => {
     const newInvoiceData = {
       items: invoiceItems,
       totalHT: cartTotals.totalHT,
-      totalTVA: cartTotals.totalTaxes,
+      totalTVA: cartTotals.totalTaxes.toFixed(2),
       totalTTC: cartTotals.totalTTC,
       date: new Date().toISOString(),
       paymentType,
