@@ -10,6 +10,7 @@ import {
 } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import ReplayIcon from '@mui/icons-material/Replay'
+import { formatPrice } from '../../utils/priceUtils'
 
 const CartItem = ({ item, updateQuantity, updatePrice, removeItem }) => {
   const [editPrice, setEditPrice] = useState(
@@ -54,9 +55,7 @@ const CartItem = ({ item, updateQuantity, updatePrice, removeItem }) => {
     const newPrice = parseFloat(editPrice.replace(',', '.'))
     if (!isNaN(newPrice) && newPrice >= 0) {
       updatePrice(item._id, newPrice) // Mettre à jour le prix modifié
-      setEditPrice(
-        newPrice.toLocaleString('fr-FR', { minimumFractionDigits: 2 }),
-      )
+      setEditPrice(newPrice.toLocaleString('fr-FR'))
       setIsPriceEdited(true)
     } else {
       setEditPrice(
@@ -94,13 +93,12 @@ const CartItem = ({ item, updateQuantity, updatePrice, removeItem }) => {
         <Typography variant="h6">{item.reference}</Typography>
         <TextField
           type="text"
-          value={editPrice}
+          value={formatPrice(editPrice)}
           onChange={handlePriceChange}
           onBlur={confirmPriceChange}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               confirmPriceChange()
-              e.preventDefault()
               e.target.select()
             }
           }}
