@@ -45,3 +45,8 @@ export const calculateTotalItem = (item) => {
   const total = priceToUse * item.quantity
   return total.toFixed(2) // Arrondi à deux décimales
 }
+
+// Fonction d'aide pour formater les nombres selon la convention française
+export const formatNumberFrench = (number) => {
+  return parseFloat(number).toLocaleString('fr-FR')
+}

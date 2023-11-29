@@ -12,6 +12,7 @@ import {
   TableContainer,
 } from '@mui/material'
 import { CompanyInfoContext } from '../../contexts/CompanyInfoContext'
+import { formatNumberFrench } from '../../utils/priceUtils'
 
 const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
   const companyInfo = useContext(CompanyInfoContext)
@@ -25,6 +26,94 @@ const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
       hour: '2-digit',
       minute: '2-digit',
     })
+
+  const items = invoiceData.items // Assurez-vous que cette ligne est correcte selon votre structure de données
+  const hasAnyDiscountOrMarkup =
+    items && items.some((item) => item.remiseMajorationLabel)
+
+  const discountOrMarkupTitle = () => {
+    const discountItems = items.filter(
+      (item) => item.remiseMajorationLabel === 'Remise',
+    ).length
+    const markupItems = items.filter(
+      (item) => item.remiseMajorationLabel === 'Majoration',
+    ).length
+
+    if (discountItems >= markupItems) {
+      return 'Remise'
+    } else {
+      return 'Majoration'
+    }
+  }
+
+  const generateTableHeaders = () => {
+    return [
+      <TableCell key="description">Description</TableCell>,
+      hasAnyDiscountOrMarkup && (
+        <TableCell key="pxCatTTC" align="right">
+          Px Cat. TTC
+        </TableCell>
+      ),
+      <TableCell key="quantity" align="right">
+        Quantité
+      </TableCell>,
+      <TableCell key="puHT" align="right">
+        Prix unitaire HT
+      </TableCell>,
+      <TableCell key="tvaPercentage" align="right">
+        TVA %
+      </TableCell>,
+      <TableCell key="puTTC" align="right">
+        Prix unitaire TTC
+      </TableCell>,
+      hasAnyDiscountOrMarkup && (
+        <TableCell key="discountOrMarkup" align="right">
+          {discountOrMarkupTitle()}
+        </TableCell>
+      ),
+      <TableCell key="totalTTC" align="right">
+        Total TTC
+      </TableCell>,
+    ].filter(Boolean)
+  }
+
+  const generateTableRowCells = (item) => {
+    return [
+      <TableCell key={`desc-${item.reference}`}>{item.reference}</TableCell>,
+      hasAnyDiscountOrMarkup && (
+        <TableCell key={`pxCat-${item.reference}`} align="right">
+          {item.remiseMajorationLabel
+            ? `${formatNumberFrench(item.prixOriginal)} €`
+            : ''}
+        </TableCell>
+      ),
+      <TableCell key={`qty-${item.reference}`} align="right">
+        {item.quantite}
+      </TableCell>,
+      <TableCell
+        key={`puht-${item.reference}`}
+        align="right"
+      >{`${formatNumberFrench(item.puHT)} €`}</TableCell>,
+      <TableCell key={`tva-${item.reference}`} align="right">{`${parseFloat(
+        item.tauxTVA,
+      ).toFixed(0)} %`}</TableCell>,
+      <TableCell
+        key={`puttc-${item.reference}`}
+        align="right"
+      >{`${formatNumberFrench(item.puTTC)} €`}</TableCell>,
+      hasAnyDiscountOrMarkup && (
+        <TableCell key={`discountOrMarkup-${item.reference}`} align="right">
+          {item.remiseMajorationLabel
+            ? `${formatNumberFrench(item.remiseMajorationValue)} %`
+            : ''}
+        </TableCell>
+      ),
+      <TableCell
+        key={`total-${item.reference}`}
+        align="right"
+      >{`${formatNumberFrench(item.totalItem)} €`}</TableCell>,
+    ].filter(Boolean)
+  }
 
   return (
     <Box ref={ref} sx={{ p: 2 }}>
@@ -53,55 +142,14 @@ const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
       </Box>
 
       {/* Liste des articles */}
-      <TableContainer component={Paper} sx={{ mt: 2 }}>
+      <TableContainer component={Paper}>
         <Table aria-label="facture articles">
           <TableHead>
-            <TableRow>
-              <TableCell>Description</TableCell>
-              {/* Colonne pour le prix catalogue TTC si remise/majoration est appliquée */}
-              {invoiceData.items.some((item) => item.remiseMajorationLabel) && (
-                <TableCell align="right">Px cat. TTC</TableCell>
-              )}
-              <TableCell align="right">Quantité</TableCell>
-              <TableCell align="right">Prix unitaire HT</TableCell>
-              <TableCell align="right">TVA %</TableCell>
-              <TableCell align="right">Prix unitaire TTC</TableCell>
-              <TableCell align="right">TVA</TableCell>
-              <TableCell align="right">Total TTC</TableCell>
-              {invoiceData.items.some((item) => item.remiseMajorationLabel) && (
-                <TableCell align="right">Remise/Majoration</TableCell>
-              )}
-            </TableRow>
+            <TableRow>{generateTableHeaders(invoiceData.items)}</TableRow>
           </TableHead>
           <TableBody>
             {invoiceData.items.map((item, index) => (
-              <TableRow key={index}>
-                <TableCell component="th" scope="row">
-                  {item.reference}
-                </TableCell>
-                {/* Toujours afficher une cellule dans la colonne "Px cat. TTC", même si vide */}
-                {invoiceData.items.some((i) => i.remiseMajorationLabel) && (
-                  <TableCell align="right">
-                    {item.remiseMajorationLabel ? item.prixOriginal + ' €' : ''}
-                  </TableCell>
-                )}
-                <TableCell align="right">{item.quantite}</TableCell>
-                <TableCell align="right">{item.puHT} €</TableCell>
-                <TableCell align="right">{item.tauxTVA} %</TableCell>
-                <TableCell align="right">{item.puTTC} €</TableCell>
-                <TableCell align="right">{item.montantTVA} €</TableCell>
-                <TableCell align="right">{item.totalItem} €</TableCell>
-                {/* Afficher la colonne de remise/majoration si applicable pour cet article */}
-                {item.remiseMajorationLabel && (
-                  <TableCell align="right">
-                    {item.remiseMajorationLabel}: {item.remiseMajorationValue}
-                  </TableCell>
-                )}
-                {/* Si aucun, ajouter une cellule vide pour maintenir la structure du tableau */}
-                {!item.remiseMajorationLabel && (
-                  <TableCell align="right"></TableCell>
-                )}
-              </TableRow>
+              <TableRow key={index}>{generateTableRowCells(item)}</TableRow>
             ))}
           </TableBody>
         </Table>
