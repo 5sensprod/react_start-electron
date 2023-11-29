@@ -3,6 +3,7 @@ import { Typography, Box, Grid } from '@mui/material'
 import { CompanyInfoContext } from '../../contexts/CompanyInfoContext'
 import { formatNumberFrench } from '../../utils/priceUtils'
 import './styles/InvoiceTable.css'
+import logo from '../../assets/logo.png'
 
 const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
   const companyInfo = useContext(CompanyInfoContext)
@@ -58,7 +59,11 @@ const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
       <tr>
         <td>{item.reference}</td>
         {hasAnyDiscountOrMarkup && (
-          <td align="right">{formatNumberFrench(item.prixOriginal)} €</td>
+          <td align="right">
+            {item.prixOriginal != null
+              ? `${formatNumberFrench(item.prixOriginal)} €`
+              : ''}
+          </td>
         )}
         <td align="right">{item.quantite}</td>
         <td align="right">{formatNumberFrench(item.puHT)} €</td>
@@ -66,7 +71,9 @@ const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
         <td align="right">{formatNumberFrench(item.puTTC)} €</td>
         {hasAnyDiscountOrMarkup && (
           <td align="right">
-            {formatNumberFrench(item.remiseMajorationValue)} %
+            {item.remiseMajorationValue !== 0
+              ? `${formatNumberFrench(item.remiseMajorationValue)} %`
+              : ''}
           </td>
         )}
         <td align="right">{formatNumberFrench(item.totalItem)} €</td>
@@ -79,7 +86,9 @@ const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
       {/* Entête de la facture */}
       <Box display="flex" justifyContent="space-between">
         {/* Card Entreprise - Haut Droite */}
-        <Box>{/* Laisser vide ou ajouter logo si nécessaire */}</Box>
+        <Box>
+          <img src={logo} alt="Logo" />
+        </Box>
         <Box component="div" border={1} borderRadius={1} p={1}>
           <Typography variant="body1">{companyInfo.name}</Typography>
           <Typography variant="body2">{companyInfo.address}</Typography>
