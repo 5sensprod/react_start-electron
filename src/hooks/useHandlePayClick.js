@@ -2,11 +2,15 @@
 import { useContext } from 'react'
 import { CartContext } from '../contexts/CartContext'
 import { addInvoice } from '../api/invoiceService'
-import { calculateInvoiceTotal } from '../utils/priceUtils'
 
 const useHandlePayClick = () => {
-  const { cartItems, setCartItems, setIsModalOpen, setInvoiceData } =
-    useContext(CartContext)
+  const {
+    cartItems,
+    setCartItems,
+    setIsModalOpen,
+    setInvoiceData,
+    cartTotals,
+  } = useContext(CartContext)
 
   const handlePayClick = async (paymentType) => {
     const invoiceItems = cartItems.map((item) => ({
@@ -24,12 +28,12 @@ const useHandlePayClick = () => {
       }),
     }))
 
-    const totalTTC = calculateInvoiceTotal(cartItems)
-
     // Créez un nouvel objet de données de facture pour l'envoyer
     const newInvoiceData = {
       items: invoiceItems,
-      totalTTC: totalTTC,
+      totalHT: cartTotals.totalHT,
+      totalTVA: cartTotals.totalTaxes,
+      totalTTC: cartTotals.totalTTC,
       date: new Date().toISOString(),
       paymentType,
     }

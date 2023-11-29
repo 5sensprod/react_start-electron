@@ -25,7 +25,7 @@ export const CartProvider = ({ children }) => {
     const priceToUse = item.prixModifie ?? item.prixVente
     const prixHT = priceToUse / (1 + taxRate)
     const montantTVA = calculateTax(prixHT, taxRate)
-    const tauxTVA = (taxRate * 100).toFixed(2)
+    const tauxTVA = taxRate * 100
     const totalItem = calculateTotalItem(item)
 
     return {

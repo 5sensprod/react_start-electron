@@ -156,6 +156,8 @@ const InvoicePrintComponent = React.forwardRef(({ invoiceData }, ref) => {
       </TableContainer>
 
       {/* Total de la facture */}
+      <Typography variant="body2">Total HT: {invoiceData.totalHT} €</Typography>
+      <Typography variant="body2">TVA: {invoiceData.totalTVA} €</Typography>
       <Typography variant="body2">
         Total TTC: {invoiceData.totalTTC} €
       </Typography>

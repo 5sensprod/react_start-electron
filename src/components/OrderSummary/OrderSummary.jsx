@@ -10,6 +10,7 @@ import {
   ListItemText,
 } from '@mui/material'
 import { formatPrice } from '../../utils/priceUtils'
+import { formatNumberFrench } from '../../utils/priceUtils'
 
 const OrderSummary = () => {
   const { cartItems, cartTotals } = useContext(CartContext)
@@ -28,14 +29,14 @@ const OrderSummary = () => {
                   <>
                     Quantité: {item.quantity}
                     <br />
-                    Prix unitaire HT: {formatPrice(item.prixHT)}
+                    Prix unitaire HT: {formatPrice(parseFloat(item.prixHT))}
                     <br />
-                    Prix unitaire TTC: {formatPrice(item.puTTC)}{' '}
+                    Prix unitaire TTC: {formatPrice(parseFloat(item.puTTC))}
                     {item.remiseMajorationLabel && (
                       <>
                         <br />
                         {item.remiseMajorationLabel}:{' '}
-                        {item.remiseMajorationValue}%
+                        {formatNumberFrench(item.remiseMajorationValue)} %
                       </>
                     )}
                   </>
