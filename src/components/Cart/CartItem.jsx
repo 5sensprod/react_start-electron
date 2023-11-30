@@ -5,7 +5,6 @@ import {
   Typography,
   IconButton,
   TextField,
-  InputAdornment,
   Box,
 } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -60,6 +59,7 @@ const CartItem = ({ item, updatePrice, updateQuantity, removeItem }) => {
         <Typography variant="h6">{item.reference}</Typography>
         <TextField
           type="text"
+          label="Prix en €"
           value={priceInput}
           onChange={handlePriceChange}
           onBlur={confirmPriceChange}
@@ -68,9 +68,6 @@ const CartItem = ({ item, updatePrice, updateQuantity, removeItem }) => {
               confirmPriceChange()
               e.target.blur()
             }
-          }}
-          InputProps={{
-            endAdornment: <InputAdornment position="end">€</InputAdornment>,
           }}
         />
         {isPriceEdited && (
@@ -85,6 +82,7 @@ const CartItem = ({ item, updatePrice, updateQuantity, removeItem }) => {
         )}
         <TextField
           type="number"
+          label="Quantité"
           value={item.quantity}
           onChange={handleQuantityChange}
           inputProps={{ min: 0 }}

@@ -16,6 +16,7 @@ import { formatPrice } from '../../utils/priceUtils'
 import useHandlePayClick from '../../hooks/useHandlePayClick'
 import InvoiceModal from '../invoice/InvoiceModal'
 import OnHoldInvoices from '../invoice/OnHoldInvoices'
+import DiscountAdjustment from './DiscountAdjustment'
 
 const Cart = () => {
   const {
@@ -74,6 +75,7 @@ const Cart = () => {
                 <Typography variant="h5">
                   Total: {formatPrice(cartTotals.totalTTC)}
                 </Typography>
+                <DiscountAdjustment />
                 <Box
                   sx={{
                     display: 'flex',

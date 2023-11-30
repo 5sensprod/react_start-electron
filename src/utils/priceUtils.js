@@ -18,6 +18,22 @@ export const calculateInvoiceTotal = (invoiceItems) => {
   }, 0)
 }
 
+export const applyCartDiscountOrMarkup = (cartTotal, adjustment) => {
+  // Assurez-vous que adjustment est un nombre et pas une chaîne de caractères ou autre
+  const numericAdjustment = parseFloat(adjustment)
+
+  // Si numericAdjustment est NaN ou 0, retournez simplement le total du panier original
+  if (isNaN(numericAdjustment) || numericAdjustment === 0) {
+    return cartTotal
+  }
+
+  // Appliquez la remise ou la majoration
+  const newTotal = cartTotal + numericAdjustment
+
+  // Assurez-vous que le total ne devienne pas négatif
+  return newTotal > 0 ? newTotal : 0
+}
+
 export const calculateDiscountMarkup = (originalPrice, modifiedPrice) => {
   let label = ''
   let value = 0
