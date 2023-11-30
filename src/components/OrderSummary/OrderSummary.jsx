@@ -13,8 +13,15 @@ import { formatPrice } from '../../utils/priceUtils'
 import { formatNumberFrench } from '../../utils/priceUtils'
 
 const OrderSummary = () => {
-  const { cartItems, cartTotals } = useContext(CartContext)
+  const { cartItems, cartTotals, adjustmentAmount } = useContext(CartContext)
   const tauxTVA = cartItems.length > 0 ? cartItems[0].tauxTVA : '0.00'
+
+  // Déterminer si un ajustement a été appliqué
+  const isAdjustmentApplied = adjustmentAmount !== 0
+
+  // Calculer le type d'ajustement
+  const adjustmentType = adjustmentAmount > 0 ? 'Majoration' : 'Remise'
+
   return (
     <Card raised>
       <CardContent>
@@ -53,8 +60,18 @@ const OrderSummary = () => {
           TVA ({tauxTVA}%) : {formatPrice(cartTotals.totalTaxes)}
         </Typography>
         <Divider />
+        {isAdjustmentApplied && (
+          <Typography>
+            {adjustmentType}: {formatPrice(Math.abs(adjustmentAmount))}
+          </Typography>
+        )}
         <Typography variant="h6">
-          Total TTC: {formatPrice(cartTotals.totalTTC)}
+          Total:{' '}
+          {formatPrice(
+            isAdjustmentApplied
+              ? cartTotals.modifiedTotal
+              : cartTotals.totalTTC,
+          )}
         </Typography>
       </CardContent>
     </Card>

@@ -23,6 +23,7 @@ export const CartProvider = ({ children }) => {
   })
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [invoiceData, setInvoiceData] = useState(null)
+  const [adjustmentAmount, setAdjustmentAmount] = useState(0)
 
   const enrichCartItem = (item) => {
     const priceToUse = item.prixModifie ?? item.prixVente
@@ -62,16 +63,24 @@ export const CartProvider = ({ children }) => {
   }
 
   const updateTotalWithAdjustment = (adjustment) => {
+    // Appliquer l'ajustement au total TTC
     const newModifiedTotal = applyCartDiscountOrMarkup(
-      cartTotals.originalTotal,
+      cartTotals.totalTTC,
       adjustment,
     )
-    // Mettez à jour les autres valeurs du panier si nécessaire
+
+    // Recalculer le total HT et les taxes en fonction du nouveau total TTC
+    const newTotalHT = newModifiedTotal / (1 + taxRate)
+    const newTotalTaxes = newModifiedTotal - newTotalHT
+
     setCartTotals({
       ...cartTotals,
+      totalHT: newTotalHT,
+      totalTaxes: newTotalTaxes,
       modifiedTotal: newModifiedTotal,
-      // totalHT et totalTaxes peuvent également être recalculés ici
     })
+
+    setAdjustmentAmount(adjustment)
   }
 
   // Mettez à jour les totaux chaque fois que le panier est modifié
@@ -83,9 +92,24 @@ export const CartProvider = ({ children }) => {
       totalTTC: newCartTotals.totalTTC,
       totalTaxes: newCartTotals.totalTaxes,
       originalTotal: newCartTotals.totalTTC,
-      modifiedTotal: newCartTotals.totalTTC,
+      // Ne pas mettre à jour modifiedTotal ici
     }))
-  }, [cartItems])
+
+    // Réappliquer la remise ou la majoration déjà définie
+    if (adjustmentAmount !== 0) {
+      // Utilisez un callback pour garantir que vous travaillez avec les totaux les plus récents
+      setCartTotals((prevTotals) => {
+        const adjustedTotal = applyCartDiscountOrMarkup(
+          prevTotals.totalTTC,
+          adjustmentAmount,
+        )
+        return {
+          ...prevTotals,
+          modifiedTotal: adjustedTotal,
+        }
+      })
+    }
+  }, [cartItems, adjustmentAmount])
 
   // Mettre la facture en attente
   const holdInvoice = () => {
@@ -182,6 +206,8 @@ export const CartProvider = ({ children }) => {
         deleteInvoice,
         updatePrice,
         cartTotals,
+        adjustmentAmount,
+        setAdjustmentAmount,
         updateTotalWithAdjustment,
         taxRate,
         isModalOpen,

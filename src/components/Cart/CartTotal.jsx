@@ -8,7 +8,8 @@ import { formatPrice } from '../../utils/priceUtils'
 const CartTotal = () => {
   const [adjustment, setAdjustment] = useState('')
   const [isAdjustmentValidated, setIsAdjustmentValidated] = useState(false)
-  const { cartTotals, updateTotalWithAdjustment } = useContext(CartContext)
+  const { cartTotals, updateTotalWithAdjustment, adjustmentAmount } =
+    useContext(CartContext)
 
   const handleAdjustmentChange = (event) => {
     setAdjustment(event.target.value)
@@ -23,6 +24,7 @@ const CartTotal = () => {
     } else {
       resetAdjustment() // Réinitialiser si la valeur est 0 ou non numérique
     }
+    updateTotalWithAdjustment(numericAdjustment)
   }
 
   const resetAdjustment = () => {
@@ -53,7 +55,7 @@ const CartTotal = () => {
             </IconButton>
           </Typography>
           <Typography variant="body2">
-            {adjustmentType}: {formatPrice(parseFloat(adjustment))}
+            {adjustmentType}: {formatPrice(Math.abs(adjustmentAmount))}
           </Typography>
         </>
       ) : (
