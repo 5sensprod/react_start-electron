@@ -69,6 +69,7 @@ const CartItem = ({ item, updatePrice, updateQuantity, removeItem }) => {
               e.target.blur()
             }
           }}
+          size="small"
         />
         {isPriceEdited && (
           <Box>

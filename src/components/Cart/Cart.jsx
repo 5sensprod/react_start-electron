@@ -12,16 +12,14 @@ import {
   FormControl,
   InputLabel,
 } from '@mui/material'
-import { formatPrice } from '../../utils/priceUtils'
 import useHandlePayClick from '../../hooks/useHandlePayClick'
 import InvoiceModal from '../invoice/InvoiceModal'
 import OnHoldInvoices from '../invoice/OnHoldInvoices'
-import DiscountAdjustment from './DiscountAdjustment'
+import CartTotal from './CartTotal'
 
 const Cart = () => {
   const {
     cartItems,
-    cartTotals,
     onHoldInvoices,
     updateQuantity,
     updatePrice,
@@ -72,10 +70,7 @@ const Cart = () => {
                     removeItem={removeItem}
                   />
                 ))}
-                <Typography variant="h5">
-                  Total: {formatPrice(cartTotals.totalTTC)}
-                </Typography>
-                <DiscountAdjustment />
+                <CartTotal />
                 <Box
                   sx={{
                     display: 'flex',

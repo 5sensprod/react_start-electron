@@ -4,6 +4,7 @@ import {
   calculateDiscountMarkup,
   calculateTax,
   calculateTotalItem,
+  applyCartDiscountOrMarkup,
 } from '../utils/priceUtils'
 
 export const CartContext = createContext()
@@ -17,6 +18,8 @@ export const CartProvider = ({ children }) => {
     totalHT: 0,
     totalTTC: 0,
     totalTaxes: 0,
+    originalTotal: 0,
+    modifiedTotal: 0,
   })
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [invoiceData, setInvoiceData] = useState(null)
@@ -58,10 +61,30 @@ export const CartProvider = ({ children }) => {
     return { totalHT, totalTTC, totalTaxes }
   }
 
+  const updateTotalWithAdjustment = (adjustment) => {
+    const newModifiedTotal = applyCartDiscountOrMarkup(
+      cartTotals.originalTotal,
+      adjustment,
+    )
+    // Mettez à jour les autres valeurs du panier si nécessaire
+    setCartTotals({
+      ...cartTotals,
+      modifiedTotal: newModifiedTotal,
+      // totalHT et totalTaxes peuvent également être recalculés ici
+    })
+  }
+
   // Mettez à jour les totaux chaque fois que le panier est modifié
   useEffect(() => {
     const newCartTotals = calculateCartTotals(cartItems)
-    setCartTotals(newCartTotals)
+    setCartTotals((prevTotals) => ({
+      ...prevTotals,
+      totalHT: newCartTotals.totalHT,
+      totalTTC: newCartTotals.totalTTC,
+      totalTaxes: newCartTotals.totalTaxes,
+      originalTotal: newCartTotals.totalTTC,
+      modifiedTotal: newCartTotals.totalTTC,
+    }))
   }, [cartItems])
 
   // Mettre la facture en attente
@@ -159,6 +182,7 @@ export const CartProvider = ({ children }) => {
         deleteInvoice,
         updatePrice,
         cartTotals,
+        updateTotalWithAdjustment,
         taxRate,
         isModalOpen,
         setIsModalOpen,
