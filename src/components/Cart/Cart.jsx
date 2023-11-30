@@ -12,7 +12,7 @@ import {
   FormControl,
   InputLabel,
 } from '@mui/material'
-import { formatPrice, calculateTotal } from '../../utils/priceUtils'
+import { formatPrice } from '../../utils/priceUtils'
 import useHandlePayClick from '../../hooks/useHandlePayClick'
 import InvoiceModal from '../invoice/InvoiceModal'
 import OnHoldInvoices from '../invoice/OnHoldInvoices'
@@ -20,6 +20,7 @@ import OnHoldInvoices from '../invoice/OnHoldInvoices'
 const Cart = () => {
   const {
     cartItems,
+    cartTotals,
     onHoldInvoices,
     updateQuantity,
     updatePrice,
@@ -71,13 +72,7 @@ const Cart = () => {
                   />
                 ))}
                 <Typography variant="h5">
-                  Total:{' '}
-                  {formatPrice(
-                    calculateTotal(
-                      cartItems,
-                      (item) => item.prixModifie ?? item.prixVente,
-                    ),
-                  )}
+                  Total: {formatPrice(cartTotals.totalTTC)}
                 </Typography>
                 <Box
                   sx={{
