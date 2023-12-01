@@ -1,4 +1,4 @@
-// ipcHandlers.js
+const { app } = require('electron')
 const { ipcMain } = require('electron')
 const { addProduct, getProducts } = require('./database/productDbOperations.js')
 const {
@@ -7,6 +7,8 @@ const {
   getParentCategories,
   getChildCategories,
 } = require('./database/categoryDbOperations.js')
+const fs = require('fs')
+const path = require('path')
 
 function setupIpcHandlers(mainWindow) {
   ipcMain.on('add-product', (event, productData) => {
@@ -23,6 +25,33 @@ function setupIpcHandlers(mainWindow) {
         })
       }
     })
+  })
+
+  ipcMain.on('save-config', (event, newConfig) => {
+    console.log('Received new config from renderer:', newConfig)
+
+    const configPath = path.join(app.getPath('userData'), 'config.json')
+    try {
+      console.log('Saving new config to:', configPath)
+      fs.writeFileSync(configPath, JSON.stringify(newConfig, null, 2))
+      console.log('Config saved successfully')
+      event.reply('config-saved', true)
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde de la configuration:', error)
+      event.reply('config-saved', false)
+    }
+  })
+
+  ipcMain.on('request-config', (event) => {
+    const configPath = path.join(app.getPath('userData'), 'config.json')
+    try {
+      const configFile = fs.readFileSync(configPath)
+      const config = JSON.parse(configFile)
+      event.reply('config', config)
+    } catch (error) {
+      console.error('Erreur lors de la lecture de la configuration:', error)
+      event.reply('config', {})
+    }
   })
 
   ipcMain.on('get-products', (event, args) => {

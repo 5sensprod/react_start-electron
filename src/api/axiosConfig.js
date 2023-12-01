@@ -1,7 +1,13 @@
+// axiosConfig.js
 import axios from 'axios'
+import config from '../config.json'
 
 const instance = axios.create({
-  baseURL: 'http://192.168.1.10:5000',
+  baseURL: config.serverUrl,
 })
+
+export const updateBaseURL = (newURL) => {
+  instance.defaults.baseURL = newURL
+}
 
 export default instance

@@ -12,17 +12,7 @@ const cataloguePath = path.join(userDataPath, 'catalogue')
 const invoiceRoutes = require('./routes/invoices')
 const app = express()
 
-app.use(
-  cors({
-    origin: [
-      'http://192.168.1.10:5000',
-      'http://192.168.1',
-      'http://localhost:3000',
-      'http://localhost:5000',
-      'http://192.168.1.10:3000',
-    ],
-  }),
-)
+app.use(cors())
 
 app.use(bodyParser.json())
 app.use('/api/users', userRoutes)
@@ -31,6 +21,7 @@ app.use('/api/products', productRoutes)
 app.use('/catalogue', express.static(cataloguePath))
 
 app.use(express.static(path.join(__dirname, '..', 'build')))
+
 const server = http.createServer(app)
 
 let isWebSocketServerReady = false

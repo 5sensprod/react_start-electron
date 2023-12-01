@@ -1,15 +1,51 @@
 const { app } = require('electron')
 const { createWindow } = require('../main/windowManager')
 const { setupIpcHandlers } = require('../main/ipcHandlers')
+const fs = require('fs')
+const path = require('path')
 
+const logFilePath = path.join(app.getPath('userData'), 'log.txt')
+
+function logToFile(message) {
+  const logMessage = new Date().toISOString() + ' - ' + message + '\n'
+  fs.appendFileSync(logFilePath, logMessage)
+}
+
+logToFile('Application démarrée')
+
+let config
+const configPath = path.join(app.getPath('userData'), 'config.json')
+
+try {
+  if (fs.existsSync(configPath)) {
+    const configFile = fs.readFileSync(configPath)
+    config = JSON.parse(configFile)
+  } else {
+    const defaultConfigPath = path.join(__dirname, 'src/config.json')
+    const defaultConfigFile = fs.readFileSync(defaultConfigPath)
+    config = JSON.parse(defaultConfigFile)
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
+  }
+  console.log('Configuration actuelle:', config) // Ajouter cette ligne
+} catch (error) {
+  console.error('Erreur lors de la lecture du fichier de configuration:', error)
+  config = { serverUrl: 'http://localhost:5000' }
+}
 let mainWindow
 
 function startExpressServer() {
-  const server = require('../server/server')
-  const PORT = 5000
-  server.listen(PORT, () => {
-    console.log(`Express and WebSocket server listening on port ${PORT}`)
-  })
+  try {
+    const serverUrl = new URL(config.serverUrl)
+    const PORT = serverUrl.port || 5000
+    const HOST = serverUrl.hostname // Utiliser l'adresse IP ou le nom d'hôte de l'URL
+
+    const server = require('../server/server')
+    server.listen(PORT, HOST, () => {
+      console.log(`Express and WebSocket server listening on ${HOST}:${PORT}`)
+    })
+  } catch (error) {
+    console.error('Failed to start the Express server:', error)
+  }
 }
 
 app.on('ready', () => {

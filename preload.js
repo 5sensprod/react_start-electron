@@ -1,7 +1,11 @@
 const { contextBridge, ipcRenderer } = require('electron')
-
-contextBridge.exposeInMainWorld('api', {
-  getProducts: () => ipcRenderer.invoke('get-products'),
-  addProduct: (productData) => ipcRenderer.send('add-product', productData),
-  // ... autres fonctions exposées
+console.log('preload.js is loaded')
+contextBridge.exposeInMainWorld('electron', {
+  ipcRenderer: {
+    send: (channel, data) => ipcRenderer.send(channel, data),
+    on: (channel, func) =>
+      ipcRenderer.on(channel, (event, ...args) => func(...args)),
+    invoke: (channel, ...args) => ipcRenderer.invoke(channel, ...args),
+    // ... autres méthodes exposées ...
+  },
 })

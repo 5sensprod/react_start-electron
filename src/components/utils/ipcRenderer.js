@@ -1,13 +1,11 @@
 let ipcRenderer = null
-if (window.require) {
-  const electron = window.require('electron')
-  ipcRenderer = electron.ipcRenderer
-}
 
 export const ipcRendererHelper = {
   send: (channel, ...args) => {
-    if (ipcRenderer) {
-      ipcRenderer.send(channel, ...args)
+    if (window.electron && window.electron.ipcRenderer) {
+      window.electron.ipcRenderer.send(channel, ...args)
+    } else {
+      console.error('ipcRenderer is not available')
     }
   },
   on: (channel, func) => {
@@ -25,5 +23,10 @@ export const ipcRendererHelper = {
       ipcRenderer.removeAllListeners(channel)
     }
   },
-  // Ajoutez ici d'autres méthodes au besoin...
+
+  init: () => {
+    if (window.electron && window.electron.ipcRenderer) {
+      ipcRenderer = window.electron.ipcRenderer
+    }
+  },
 }
