@@ -56,23 +56,27 @@ const CartItem = ({ item, updatePrice, updateQuantity, removeItem }) => {
   return (
     <Card variant="outlined">
       <CardContent>
-        <Typography variant="h6">{item.reference}</Typography>
-        <TextField
-          type="text"
-          label="Prix en €"
-          value={priceInput}
-          onChange={handlePriceChange}
-          onBlur={confirmPriceChange}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              confirmPriceChange()
-              e.target.blur()
-            }
-          }}
-          size="small"
-        />
+        <Box mb={2}>
+          <Typography variant="h6">{item.reference}</Typography>
+        </Box>
+        <Box mb={0}>
+          <TextField
+            type="text"
+            label="Prix en €"
+            value={priceInput}
+            onChange={handlePriceChange}
+            onBlur={confirmPriceChange}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                confirmPriceChange()
+                e.target.blur()
+              }
+            }}
+            size="small"
+          />
+        </Box>
         {isPriceEdited && (
-          <Box>
+          <Box mb={2}>
             <Typography variant="body2" color="textSecondary">
               Prix catalogue : {formatPrice(originalPrice)}
               <IconButton onClick={resetPrice} size="small">
@@ -81,17 +85,20 @@ const CartItem = ({ item, updatePrice, updateQuantity, removeItem }) => {
             </Typography>
           </Box>
         )}
-        <TextField
-          type="number"
-          label="Quantité"
-          value={item.quantity}
-          onChange={handleQuantityChange}
-          inputProps={{ min: 0 }}
-          size="small"
-        />
-        <IconButton onClick={handleRemoveClick}>
-          <DeleteIcon />
-        </IconButton>
+        <Box mt={2}>
+          <TextField
+            type="number"
+            label="Quantité"
+            value={item.quantity}
+            onChange={handleQuantityChange}
+            inputProps={{ min: 0 }}
+            size="small"
+          />
+
+          <IconButton onClick={handleRemoveClick}>
+            <DeleteIcon />
+          </IconButton>
+        </Box>
       </CardContent>
     </Card>
   )

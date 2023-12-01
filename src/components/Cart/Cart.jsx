@@ -40,28 +40,11 @@ const Cart = () => {
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={4}>
-          <FormControl fullWidth>
-            <InputLabel id="payment-type-label">Type de paiement</InputLabel>
-            <Select
-              labelId="payment-type-label"
-              id="payment-type-select"
-              value={paymentType}
-              label="Type de paiement"
-              onChange={(event) => setPaymentType(event.target.value)}
-            >
-              <MenuItem value="CB">Carte Bancaire</MenuItem>
-              <MenuItem value="Cash">Espèces</MenuItem>
-              <MenuItem value="Cheque">Chèque</MenuItem>
-              <MenuItem value="ChequeCadeau">Chèque Cadeau</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
         <Grid item xs={12} md={8}>
-          <Box>
-            {cartItems.length > 0 ? (
-              <>
-                {cartItems.map((item) => (
+          {cartItems.length > 0 ? (
+            <>
+              {cartItems.map((item) => (
+                <Box mb={2}>
                   <CartItem
                     key={item._id}
                     item={item}
@@ -69,38 +52,63 @@ const Cart = () => {
                     updatePrice={updatePrice}
                     removeItem={removeItem}
                   />
-                ))}
-                <CartTotal />
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'flex-end',
-                    marginTop: '8px',
-                  }}
-                >
-                  {!isCurrentCartOnHold && cartItems.length > 0 && (
-                    <Button
-                      onClick={holdInvoice}
-                      variant="contained"
-                      sx={{ marginRight: '8px' }}
-                    >
-                      Mettre en attente
-                    </Button>
-                  )}
-                  <Button
-                    onClick={() => handlePayment(paymentType)}
-                    variant="contained"
-                    color="primary"
-                  >
-                    Payer
-                  </Button>
                 </Box>
-              </>
-            ) : (
-              <Typography variant="h6">Votre panier est vide.</Typography>
-            )}
-          </Box>
+              ))}
+              <Grid item xs={12} md={12}>
+                <Box mb={2}>
+                  <FormControl fullWidth>
+                    <InputLabel id="payment-type-label">
+                      Type de paiement
+                    </InputLabel>
+                    <Select
+                      labelId="payment-type-label"
+                      id="payment-type-select"
+                      value={paymentType}
+                      label="Type de paiement"
+                      size="small"
+                      onChange={(event) => setPaymentType(event.target.value)}
+                    >
+                      <MenuItem value="CB">Carte Bancaire</MenuItem>
+                      <MenuItem value="Cash">Espèces</MenuItem>
+                      <MenuItem value="Cheque">Chèque</MenuItem>
+                      <MenuItem value="ChequeCadeau">Chèque Cadeau</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Box>
+              </Grid>
+              <Box mb={2}>
+                <CartTotal />
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  marginTop: '8px',
+                }}
+              >
+                {!isCurrentCartOnHold && cartItems.length > 0 && (
+                  <Button
+                    onClick={holdInvoice}
+                    variant="contained"
+                    sx={{ marginRight: '8px' }}
+                  >
+                    Mettre en attente
+                  </Button>
+                )}
+                <Button
+                  onClick={() => handlePayment(paymentType)}
+                  variant="contained"
+                  color="primary"
+                >
+                  Payer
+                </Button>
+              </Box>
+            </>
+          ) : (
+            <Typography variant="h6">Votre panier est vide.</Typography>
+          )}
         </Grid>
+
         {cartItems.length > 0 && (
           <Grid item xs={12} md={4}>
             <OrderSummary cartItems={cartItems} taxRate={taxRate} />
