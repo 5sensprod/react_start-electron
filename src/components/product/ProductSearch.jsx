@@ -21,12 +21,26 @@ import useProducts from '../hooks/useProducts'
 import useSearch from '../hooks/useSearch'
 const isAndroidWebView = navigator.userAgent.toLowerCase().includes('wv')
 
-const ProductSearch = () => {
+const ProductSearch = ({ serverUrl }) => {
+  console.log('Serveuse URL:', serverUrl)
+
   const [searchTerm, setSearchTerm] = useState('')
   const [isScannerMode, setIsScannerMode] = useState(true)
   const { products, loading, error } = useProducts()
   const { addToCart } = useContext(CartContext)
   const filteredProducts = useSearch(products, searchTerm)
+
+  let websocketUrl
+  try {
+    const url = new URL(serverUrl)
+    const protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
+    websocketUrl = `${protocol}//${url.host}`
+    console.log('WebSocket URL:', websocketUrl) // Ajoutez ceci pour vérifier l'URL WebSocket
+  } catch (e) {
+    console.error('URL constructor error:', e.message)
+    // Gérer l'erreur ou utiliser une URL WebSocket par défaut
+    websocketUrl = 'ws://default-websocket-url' // Mettez ici votre URL par défaut
+  }
 
   const handleScanClick = () => {
     if (window.Android) {
@@ -68,7 +82,7 @@ const ProductSearch = () => {
   }, [])
 
   useWebSocket(
-    'ws://192.168.1.10:5000',
+    websocketUrl,
     handleWsMessage,
     handleWsError,
     handleWsOpen,

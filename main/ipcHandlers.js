@@ -42,17 +42,30 @@ function setupIpcHandlers(mainWindow) {
     }
   })
 
-  ipcMain.on('request-config', (event) => {
-    const configPath = path.join(app.getPath('userData'), 'config.json')
+  ipcMain.handle('request-config', async (event) => {
     try {
-      const configFile = fs.readFileSync(configPath)
+      const configPath = path.join(app.getPath('userData'), 'config.json')
+      const configFile = fs.readFileSync(configPath, 'utf8')
       const config = JSON.parse(configFile)
-      event.reply('config', config)
+      return config // Retourne la configuration lue
     } catch (error) {
       console.error('Erreur lors de la lecture de la configuration:', error)
-      event.reply('config', {})
+      // Gérer l'erreur, par exemple, en retournant une valeur par défaut ou une erreur
+      return { error: error.message }
     }
   })
+
+  // ipcMain.on('request-config', (event) => {
+  //   const configPath = path.join(app.getPath('userData'), 'config.json')
+  //   try {
+  //     const configFile = fs.readFileSync(configPath)
+  //     const config = JSON.parse(configFile)
+  //     event.reply('config', config)
+  //   } catch (error) {
+  //     console.error('Erreur lors de la lecture de la configuration:', error)
+  //     event.reply('config', {})
+  //   }
+  // })
 
   ipcMain.on('get-products', (event, args) => {
     getProducts((err, docs) => {

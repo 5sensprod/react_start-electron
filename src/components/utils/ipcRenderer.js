@@ -5,7 +5,7 @@ export const ipcRendererHelper = {
     if (window.electron && window.electron.ipcRenderer) {
       window.electron.ipcRenderer.send(channel, ...args)
     } else {
-      console.error('ipcRenderer is not available')
+      // console.error('ipcRenderer is not available')
     }
   },
   on: (channel, func) => {
@@ -21,6 +21,15 @@ export const ipcRendererHelper = {
   removeAllListeners: (channel) => {
     if (ipcRenderer) {
       ipcRenderer.removeAllListeners(channel)
+    }
+  },
+
+  invoke: (channel, ...args) => {
+    if (window.electron && window.electron.ipcRenderer) {
+      return window.electron.ipcRenderer.invoke(channel, ...args)
+    } else {
+      console.error('ipcRenderer is not available')
+      return Promise.reject(new Error('ipcRenderer not available'))
     }
   },
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ThemeProvider, Grid, Box } from '@mui/material'
 import theme from './theme/theme'
 import './i18n'
@@ -12,10 +12,21 @@ import { ipcRendererHelper } from './components/utils/ipcRenderer'
 import { updateBaseURL } from './api/axiosConfig'
 
 const App = () => {
+  const [serverUrl, setServerUrl] = useState('')
+
   useEffect(() => {
+    // Demander la configuration actuelle au démarrage
+    ipcRendererHelper.invoke('request-config').then((config) => {
+      if (config && config.serverUrl) {
+        setServerUrl(config.serverUrl)
+        updateBaseURL(config.serverUrl) // Mettre à jour l'URL de base d'Axios
+      }
+    })
+
     const handleConfigUpdate = (newConfig) => {
       if (newConfig && newConfig.serverUrl) {
-        updateBaseURL(newConfig.serverUrl)
+        setServerUrl(newConfig.serverUrl)
+        updateBaseURL(newConfig.serverUrl) // Mettre à jour l'URL de base d'Axios
       }
     }
 
@@ -32,7 +43,7 @@ const App = () => {
           <Box sx={{ margin: '32px' }}>
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
-                <ProductSearch />
+                <ProductSearch serverUrl={serverUrl} />
               </Grid>
               <Grid item xs={12} md={6}>
                 <Cart />
