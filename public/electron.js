@@ -3,6 +3,7 @@ const { createWindow } = require('../main/windowManager')
 const { setupIpcHandlers } = require('../main/ipcHandlers')
 const fs = require('fs')
 const path = require('path')
+const { setConfig } = require('../main/configManager')
 
 const logFilePath = path.join(app.getPath('userData'), 'log.txt')
 
@@ -14,6 +15,7 @@ function logToFile(message) {
 logToFile('Application démarrée')
 
 let config
+
 const configPath = path.join(app.getPath('userData'), 'config.json')
 
 try {
@@ -47,6 +49,8 @@ function startExpressServer() {
     console.error('Failed to start the Express server:', error)
   }
 }
+
+setConfig(config)
 
 app.on('ready', () => {
   console.log('App is ready, starting Express server...')

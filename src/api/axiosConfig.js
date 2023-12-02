@@ -1,13 +1,25 @@
-// axiosConfig.js
 import axios from 'axios'
 import config from '../config.json'
 
-const instance = axios.create({
-  baseURL: config.serverUrl,
-})
+let instance = createAxiosInstance(config.serverUrl)
+console.log('Initial Axios base URL:', instance.defaults.baseURL)
 
-export const updateBaseURL = (newURL) => {
-  instance.defaults.baseURL = newURL
+function createAxiosInstance(baseURL) {
+  return axios.create({
+    baseURL,
+  })
 }
 
-export default instance
+export const updateBaseURL = (newURL) => {
+  return new Promise((resolve) => {
+    console.log('Updating Axios base URL to:', newURL)
+    instance = createAxiosInstance(newURL) // Recréer l'instance
+    resolve()
+  })
+}
+
+// Assigner la fonction fléchée à une variable
+const getAxiosInstance = () => instance
+
+// Exporter cette variable
+export default getAxiosInstance

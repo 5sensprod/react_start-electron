@@ -10,23 +10,29 @@ import SettingsForm from './ServerConfig'
 import { ipcRendererHelper } from './components/utils/ipcRenderer'
 
 import { updateBaseURL } from './api/axiosConfig'
+import { fetchConfig, getConfig } from './api/configService'
 
 const App = () => {
   const [serverUrl, setServerUrl] = useState('')
+  const [isURLUpdated, setIsURLUpdated] = useState(false) // Nouvel état pour suivre la mise à jour
+
+  const updateURL = async (url) => {
+    await updateBaseURL(url) // Attendre la mise à jour de l'URL
+    setIsURLUpdated(true) // Indiquer que l'URL a été mise à jour
+  }
 
   useEffect(() => {
-    // Demander la configuration actuelle au démarrage
     ipcRendererHelper.invoke('request-config').then((config) => {
       if (config && config.serverUrl) {
         setServerUrl(config.serverUrl)
-        updateBaseURL(config.serverUrl) // Mettre à jour l'URL de base d'Axios
+        updateURL(config.serverUrl) // Mettre à jour l'URL de manière asynchrone
       }
     })
 
     const handleConfigUpdate = (newConfig) => {
       if (newConfig && newConfig.serverUrl) {
         setServerUrl(newConfig.serverUrl)
-        updateBaseURL(newConfig.serverUrl) // Mettre à jour l'URL de base d'Axios
+        updateURL(newConfig.serverUrl) // Mettre à jour l'URL de manière asynchrone
       }
     }
 
@@ -36,6 +42,25 @@ const App = () => {
       ipcRendererHelper.removeAllListeners('config-updated')
     }
   }, [])
+
+  // Afficher un indicateur de chargement si l'URL n'est pas encore mise à jour
+  if (!isURLUpdated) {
+    console.log('Fetching configuration via API as fallback')
+    fetchConfig()
+      .then(() => {
+        const config = getConfig()
+        console.log('Config fetched via API:', config)
+        if (config && config.serverUrl) {
+          setServerUrl(config.serverUrl)
+          updateURL(config.serverUrl)
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching configuration:', error)
+      })
+
+    return <div>Chargement configuration...</div>
+  }
   return (
     <ThemeProvider theme={theme}>
       <CompanyInfoProvider>

@@ -1,8 +1,9 @@
 // src/api/invoiceService.js
-import axios from './axiosConfig'
+import getAxiosInstance from './axiosConfig'
 
 export const getInvoices = async () => {
   try {
+    const axios = getAxiosInstance() // Utiliser l'instance actuelle d'Axios
     const response = await axios.get('/api/invoices')
     console.log('Invoices received:', response.data)
     return response.data
@@ -15,6 +16,7 @@ export const getInvoices = async () => {
 
 export const addInvoice = async (invoiceData) => {
   try {
+    const axios = getAxiosInstance() // Utiliser l'instance actuelle d'Axios
     const response = await axios.post('/api/invoices', invoiceData)
     console.log('Invoice added:', response.data)
     return response.data
@@ -27,6 +29,7 @@ export const addInvoice = async (invoiceData) => {
 
 export const updateInvoice = async (id, invoiceData) => {
   try {
+    const axios = getAxiosInstance() // Utiliser l'instance actuelle d'Axios
     const response = await axios.put(`/api/invoices/${id}`, invoiceData)
     console.log('Invoice updated:', response.data)
     return response.data
@@ -39,6 +42,7 @@ export const updateInvoice = async (id, invoiceData) => {
 
 export const deleteInvoice = async (id) => {
   try {
+    const axios = getAxiosInstance() // Utiliser l'instance actuelle d'Axios
     const response = await axios.delete(`/api/invoices/${id}`)
     console.log('Invoice deleted:', response.data)
     return response.data

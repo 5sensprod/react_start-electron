@@ -9,6 +9,7 @@ const {
 } = require('./database/categoryDbOperations.js')
 const fs = require('fs')
 const path = require('path')
+const { setConfig } = require('./configManager')
 
 function setupIpcHandlers(mainWindow) {
   ipcMain.on('add-product', (event, productData) => {
@@ -35,6 +36,10 @@ function setupIpcHandlers(mainWindow) {
       console.log('Saving new config to:', configPath)
       fs.writeFileSync(configPath, JSON.stringify(newConfig, null, 2))
       console.log('Config saved successfully')
+
+      // Mise à jour de la configuration dans configManager
+      setConfig(newConfig)
+
       event.reply('config-saved', true)
     } catch (error) {
       console.error('Erreur lors de la sauvegarde de la configuration:', error)
@@ -54,18 +59,6 @@ function setupIpcHandlers(mainWindow) {
       return { error: error.message }
     }
   })
-
-  // ipcMain.on('request-config', (event) => {
-  //   const configPath = path.join(app.getPath('userData'), 'config.json')
-  //   try {
-  //     const configFile = fs.readFileSync(configPath)
-  //     const config = JSON.parse(configFile)
-  //     event.reply('config', config)
-  //   } catch (error) {
-  //     console.error('Erreur lors de la lecture de la configuration:', error)
-  //     event.reply('config', {})
-  //   }
-  // })
 
   ipcMain.on('get-products', (event, args) => {
     getProducts((err, docs) => {

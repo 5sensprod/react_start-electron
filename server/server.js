@@ -10,6 +10,7 @@ const http = require('http')
 const userDataPath = (electron.app || electron.remote.app).getPath('userData')
 const cataloguePath = path.join(userDataPath, 'catalogue')
 const invoiceRoutes = require('./routes/invoices')
+const { getConfig } = require('../main/configManager')
 const app = express()
 
 app.use(cors())
@@ -66,6 +67,12 @@ app.get('/status', (req, res) => {
   } else {
     res.status(503).json({ status: 'not ready' })
   }
+})
+
+// Nouvelle route pour obtenir la configuration actuelle
+app.get('/api/config', (req, res) => {
+  const currentConfig = getConfig()
+  res.json(currentConfig)
 })
 
 module.exports = server

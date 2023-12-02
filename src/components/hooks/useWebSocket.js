@@ -36,6 +36,30 @@ const useWebSocket = (url, onMessage, onError, onOpen, onClose) => {
   }, [url, attempts, clearReconnectionTimeout])
 
   useEffect(() => {
+    // Fermer la connexion WebSocket existante si l'URL change
+    if (ws.current) {
+      console.log('URL has changed, closing the current WebSocket connection')
+      ws.current.close()
+    }
+
+    // Réinitialiser l'état pour la nouvelle connexion
+    setShouldConnect(false)
+    setAttempts(0)
+    clearReconnectionTimeout()
+
+    // Initialiser une nouvelle vérification de l'état du serveur
+    const initialDelay = 3000 // Start with a 3-second delay to check server status
+    timeoutRef.current = setTimeout(checkServerStatus, initialDelay)
+
+    return () => {
+      clearReconnectionTimeout()
+      if (ws.current) {
+        ws.current.close()
+      }
+    }
+  }, [url, checkServerStatus, clearReconnectionTimeout]) // Ajouter url comme dépendance pour réagir aux changements d'URL
+
+  useEffect(() => {
     if (shouldConnect) {
       console.log('Attempting to connect to WebSocket', url)
 
@@ -69,22 +93,15 @@ const useWebSocket = (url, onMessage, onError, onOpen, onClose) => {
       clearReconnectionTimeout()
     }
   }, [
+    shouldConnect,
     url,
     onMessage,
     onError,
     onOpen,
     onClose,
-    shouldConnect,
     checkServerStatus,
     clearReconnectionTimeout,
   ])
-
-  // Initialize the connection check after a delay to give the server time to start
-  useEffect(() => {
-    const initialDelay = 3000 // Start with a 3-second delay to check server status
-    timeoutRef.current = setTimeout(checkServerStatus, initialDelay)
-    return clearReconnectionTimeout
-  }, [checkServerStatus, clearReconnectionTimeout])
 
   const sendMessage = useCallback((message) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
