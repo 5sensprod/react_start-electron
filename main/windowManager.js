@@ -1,6 +1,7 @@
 const { BrowserWindow } = require('electron')
 const isDev = require('electron-is-dev')
 const path = require('path')
+const { getLocalIPv4Address } = require('./networkUtils')
 
 let mainWindow = null
 
@@ -14,6 +15,10 @@ function createWindow() {
       preload: path.join(__dirname, '../preload.js'), // Ajoutez le chemin vers votre fichier preload.js ici
     },
   })
+
+  console.log('Getting local IP Address...')
+  const localIP = getLocalIPv4Address()
+  console.log('Local IP Address:', localIP)
 
   const startURL = isDev
     ? 'http://localhost:3000'

@@ -10,10 +10,11 @@ function createAxiosInstance(baseURL) {
   })
 }
 
-export const updateBaseURL = (newURL) => {
+export const updateBaseURL = (newURL, callback) => {
   return new Promise((resolve) => {
     console.log('Updating Axios base URL to:', newURL)
     instance = createAxiosInstance(newURL) // Recréer l'instance
+    callback?.() // Appeler le callback si fourni
     resolve()
   })
 }

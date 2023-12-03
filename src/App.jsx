@@ -45,11 +45,9 @@ const App = () => {
 
   // Afficher un indicateur de chargement si l'URL n'est pas encore mise à jour
   if (!isURLUpdated) {
-    console.log('Fetching configuration via API as fallback')
     fetchConfig()
       .then(() => {
         const config = getConfig()
-        console.log('Config fetched via API:', config)
         if (config && config.serverUrl) {
           setServerUrl(config.serverUrl)
           updateURL(config.serverUrl)
@@ -57,9 +55,10 @@ const App = () => {
       })
       .catch((error) => {
         console.error('Error fetching configuration:', error)
+        // Afficher un message d'erreur ou gérer l'erreur différemment
       })
 
-    return <div>Chargement configuration...</div>
+    return <div>Loading configuration...</div>
   }
   return (
     <ThemeProvider theme={theme}>
